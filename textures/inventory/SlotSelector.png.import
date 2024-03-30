@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://1x6y10fxwuow"
-path="res://.godot/imported/5.png-02e2b21a564175c1e4cdf4f9305e9ffe.ctex"
+uid="uid://cam08iutrim5g"
+path="res://.godot/imported/SlotSelector.png-89cb4271e40727167da0c8016e5fd74a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://textures/hotbar/numbers/5.png"
-dest_files=["res://.godot/imported/5.png-02e2b21a564175c1e4cdf4f9305e9ffe.ctex"]
+source_file="res://textures/inventory/SlotSelector.png"
+dest_files=["res://.godot/imported/SlotSelector.png-89cb4271e40727167da0c8016e5fd74a.ctex"]
 
 [params]
 

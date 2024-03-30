@@ -10,9 +10,9 @@ size = Vector2(12, 12)
 size = Vector2(8, 8)
 
 [node name="DroppedItem" type="CharacterBody2D"]
+modulate = Color(1.2, 1.2, 1.2, 1)
 position = Vector2(-22, -3)
 collision_layer = 0
-collision_mask = 2
 script = ExtResource("1_5vqrp")
 
 [node name="ItemPickup" type="Area2D" parent="."]
@@ -25,9 +25,10 @@ shape = SubResource("RectangleShape2D_fsfwf")
 [node name="ItemSprite" type="Sprite2D" parent="."]
 texture = ExtResource("2_txvr0")
 hframes = 8
-vframes = 3
+vframes = 4
 
 [node name="ItemCollision" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_nnwr8")
 
 [connection signal="body_entered" from="ItemPickup" to="." method="_on_item_pickup_body_entered"]
+[connection signal="body_exited" from="ItemPickup" to="." method="_on_item_pickup_body_exited"]

@@ -2,13 +2,13 @@ extends TileMap
 
 const INITIAL_X = -13
 const ITEM_SPACING = 9
-const BLOCK_LAYER = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2, 2]
-const BLOCK_FRAME = ["grass", "dirt", "sand", "gravel", "stone", "coal_ore", "iron_ore", "diamond_ore", "leaves", "log", "stripped_log", "planks", "crafting_table", "barrel", "post", "glass"]
-const BLOCK_DROPS = {"grass": ["dirt"], "gravel": ["gravel", "gravel", "flint"], "coal_ore": ["coal"], "diamond_ore": ["diamond"], "leaves": [ "apple", "sapling", "sapling", "air", "air", "air", "air"], "glass": ["air"]}
-const PLACEABLE_ITEMS = ["grass", "dirt", "sand", "gravel", "stone", "coal_ore", "iron_ore", "diamond_ore", "leaves", "log", "stripped_log", "planks", "crafting_table", "barrel", "post", "glass"]
+const BLOCK_LAYER = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2, 2, 2, 0, 0, 0, 0]
+const BLOCK_FRAME = ["grass", "dirt", "sand", "gravel", "stone", "coal_ore", "iron_ore", "diamond_ore", "leaves", "log", "stripped_log", "plank", "crafting_table", "barrel", "post", "glass", "thick_leaves", "slab", "wool", "red_wool", "save_block"]
+const BLOCK_DROPS = {"thick_leaves": ["apple", "sapling", "sapling", "air", "air"], "save_block": ["diamond"], "grass": ["dirt"], "gravel": ["gravel", "gravel", "flint"], "coal_ore": ["coal"], "diamond_ore": ["diamond"], "leaves": [ "apple", "sapling", "sapling", "air", "air", "air", "air"], "glass": ["air"]}
+const PLACEABLE_ITEMS = ["grass", "dirt", "sand", "gravel", "stone", "coal_ore", "iron_ore", "diamond_ore", "leaves", "log", "stripped_log", "plank", "crafting_table", "barrel", "post", "glass", "slab", "wool", "red_wool"]
 const SWORDS = ["stone_sword", "iron_sword", "diamond_sword"]
 const DROPPED_ITEM = preload("res://scenes/dropped_item.tscn")
-const BREAK_DURATION = [.5, .5, .5, .5, 1.5, 1.5, 2, 2.5, .4, .8, .8, .8, .8, .8, .8, .3]
+const BREAK_DURATION = [.5, .5, .5, .5, 1.5, 1.5, 2, 2.5, .4, .8, .8, .8, .8, .8, .8, .3, .4, .8, .6, .6, 86400]
 const LAYERS = 3
 const BLOCK_SPACING = 12.0
 const SWORD_COOLDOWN = .5
@@ -27,9 +27,9 @@ func _process(delta):
 	
 	_update_slot()
 	
-	if target != local_to_map(get_local_mouse_position()):
+	if target != local_to_map($PlayerCursor.position):
 		
-		target = local_to_map(get_local_mouse_position())
+		target = local_to_map($PlayerCursor.position)
 		miningStart = Time.get_ticks_msec()
 		
 	_update_player_sight()
@@ -50,11 +50,7 @@ func _process(delta):
 				if targetAtlas == Vector2i(-1, -1) and PLACEABLE_ITEMS.has(inventory[0][slot][0]):
 					inventory[0][slot][1] = inventory[0][slot][1] - 1
 					
-					var atlasY = floor(BLOCK_FRAME.find(inventory[0][slot][0]) / 8)
-					var atlasX = BLOCK_FRAME.find(inventory[0][slot][0]) - 8 * floor(BLOCK_FRAME.find(inventory[0][slot][0]) / 8)
-					var atlasCoords = Vector2i(atlasX, atlasY)
-					
-					set_cell(targetLayer, target, 1, atlasCoords)
+					_place(inventory[0][slot][0], target)
 					
 					if inventory[0][slot][1] == 0:
 						inventory[0][slot][0] = "air"
@@ -65,12 +61,6 @@ func _process(delta):
 		
 		if Input.is_action_just_released("click"):
 			mining = false
-		
-		if SWORDS.has(inventory[0][slot][0]):
-				mining = false
-				
-				if Input.is_action_just_pressed("click") and get_node("../Player").swordCooldown == 0:
-					get_node("../Player").swordCooldown = SWORD_COOLDOWN
 		
 		if mining:
 			var topLayer = 0
@@ -91,23 +81,43 @@ func _process(delta):
 				
 				set_cell(topLayer, target, -1)
 				miningStart = Time.get_ticks_msec()
+				var item = BLOCK_FRAME[targetAtlas.x + targetAtlas.y * 8]
 				
-				var item = DROPPED_ITEM.instantiate()
-				item.item = BLOCK_FRAME[targetAtlas.x + targetAtlas.y * 8]
+				if BLOCK_DROPS.keys().has(item):
+					item = BLOCK_DROPS[item].pick_random()
+				
+				if item != "air":
+					_drop(item, 1, (Vector2(target) + Vector2(.5, 0)) * BLOCK_SPACING)
 
-				if BLOCK_DROPS.keys().has(item.item):
-					item.item = BLOCK_DROPS[item.item].pick_random()
-				
-				item.position = target * BLOCK_SPACING
-				
-				if item.item != "air":
-					add_child(item)
+func _drop(item, count, coords):
+	
+	for drop in range(count):
+		var droppedItem = DROPPED_ITEM.instantiate()
+		droppedItem.item = item
+		droppedItem.position = coords
+		add_child(droppedItem)
+
+func _place(block, coords):
+	var targetLayer = BLOCK_LAYER[BLOCK_FRAME.find(block)]
+	var atlasY = floor(BLOCK_FRAME.find(block) / 8)
+	var atlasX = BLOCK_FRAME.find(block) - 8 * floor(BLOCK_FRAME.find(block) / 8)
+	var atlasCoords = Vector2i(atlasX, atlasY)
+	set_cell(targetLayer, coords, 1, atlasCoords)
 
 func _update_player_sight():
-	$PlayerCursor.position = round(get_local_mouse_position() / BLOCK_SPACING - Vector2(.5, .5)) * BLOCK_SPACING + Vector2(BLOCK_SPACING / 2, BLOCK_SPACING / 2)
+	var spaceState = $PlayerCursor/CursorRay.get_world_2d().direct_space_state
+	var query = PhysicsRayQueryParameters2D.create(get_node("../Player").position, get_global_mouse_position(), $PlayerCursor/CursorRay.collision_mask)
+	var result = spaceState.intersect_ray(query)
+		
+	if result.size() > 0:
+		var pos = result.position
+		$PlayerCursor.position = (pos + (get_node("../Player").position - get_global_mouse_position()).normalized() * -BLOCK_SPACING / 2) / BLOCK_SPACING
+	
+	else:
+		$PlayerCursor.position = round(get_local_mouse_position() / BLOCK_SPACING - Vector2(.5, .5)) * BLOCK_SPACING + Vector2(BLOCK_SPACING / 2, BLOCK_SPACING / 2)
 	
 	if mining:
-		$PlayerCursor.frame = floor(breakTime * 8/ breakTimeGoal) + 1
+		$PlayerCursor.frame = floor(breakTime * 8 / breakTimeGoal)
 	
 	else:
 		$PlayerCursor.frame = 0

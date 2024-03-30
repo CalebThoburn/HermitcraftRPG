@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ct5seysn8qj5u"
-path="res://.godot/imported/InventoryItems.png-8ce261c9ed30abdf777958b1e69f2b35.ctex"
+uid="uid://bw01mvmeo0fuj"
+path="res://.godot/imported/spark.png-70c7125caf78bf4ec00a9c9e9fd1329a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://textures/hotbar/InventoryItems.png"
-dest_files=["res://.godot/imported/InventoryItems.png-8ce261c9ed30abdf777958b1e69f2b35.ctex"]
+source_file="res://textures/cretures/boomBeatle/spark.png"
+dest_files=["res://.godot/imported/spark.png-70c7125caf78bf4ec00a9c9e9fd1329a.ctex"]
 
 [params]
 

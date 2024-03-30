@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://boun5nbyju0if"]
+
+[ext_resource type="Script" path="res://scripts/Spark.gd" id="1_vjmf0"]
+[ext_resource type="Texture2D" uid="uid://bw01mvmeo0fuj" path="res://textures/cretures/boomBeatle/spark.png" id="2_8j3ks"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mrhsg"]
+size = Vector2(1, 1)
+
+[node name="Spark" type="CharacterBody2D"]
+position = Vector2(-31, -7)
+collision_layer = 0
+script = ExtResource("1_vjmf0")
+
+[node name="SparkSprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_8j3ks")
+offset = Vector2(0.5, 0.5)
+
+[node name="SparkCollision" type="CollisionShape2D" parent="."]
+position = Vector2(0.5, 0.5)
+shape = SubResource("RectangleShape2D_mrhsg")

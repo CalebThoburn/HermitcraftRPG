@@ -1,48 +1,48 @@
 [gd_scene load_steps=12 format=3 uid="uid://cc4ua4fgtjo24"]
 
-[ext_resource type="Texture2D" uid="uid://d0skq017gtukd" path="res://textures/hotbar/numbers/0.png" id="1_5xva7"]
-[ext_resource type="Texture2D" uid="uid://c8xkm35ed2r6r" path="res://textures/hotbar/numbers/1.png" id="2_bibbm"]
-[ext_resource type="Texture2D" uid="uid://dgvmog6xjr33y" path="res://textures/hotbar/numbers/2.png" id="3_7ug4w"]
-[ext_resource type="Texture2D" uid="uid://opwgiyqq1r0j" path="res://textures/hotbar/numbers/3.png" id="4_yrt7s"]
-[ext_resource type="Texture2D" uid="uid://du2aktaghxxiv" path="res://textures/hotbar/numbers/4.png" id="5_kjrvp"]
-[ext_resource type="Texture2D" uid="uid://1x6y10fxwuow" path="res://textures/hotbar/numbers/5.png" id="6_cc7ks"]
-[ext_resource type="Texture2D" uid="uid://cds3dlnmlc1aw" path="res://textures/hotbar/numbers/6.png" id="7_8aymc"]
-[ext_resource type="Texture2D" uid="uid://bljqcqlsrc1kk" path="res://textures/hotbar/numbers/7.png" id="8_v4mex"]
-[ext_resource type="Texture2D" uid="uid://bu1o05ie4v1dv" path="res://textures/hotbar/numbers/8.png" id="9_pg1u6"]
-[ext_resource type="Texture2D" uid="uid://bqg0xvy4vesoe" path="res://textures/hotbar/numbers/9.png" id="10_yh08e"]
+[ext_resource type="Texture2D" uid="uid://d0skq017gtukd" path="res://textures/inventory/numbers/0.png" id="1_8vo5u"]
+[ext_resource type="Texture2D" uid="uid://c8xkm35ed2r6r" path="res://textures/inventory/numbers/1.png" id="2_i13mi"]
+[ext_resource type="Texture2D" uid="uid://dgvmog6xjr33y" path="res://textures/inventory/numbers/2.png" id="3_qciba"]
+[ext_resource type="Texture2D" uid="uid://opwgiyqq1r0j" path="res://textures/inventory/numbers/3.png" id="4_whw3j"]
+[ext_resource type="Texture2D" uid="uid://du2aktaghxxiv" path="res://textures/inventory/numbers/4.png" id="5_wthb3"]
+[ext_resource type="Texture2D" uid="uid://1x6y10fxwuow" path="res://textures/inventory/numbers/5.png" id="6_k4a0l"]
+[ext_resource type="Texture2D" uid="uid://cds3dlnmlc1aw" path="res://textures/inventory/numbers/6.png" id="7_r16qw"]
+[ext_resource type="Texture2D" uid="uid://bljqcqlsrc1kk" path="res://textures/inventory/numbers/7.png" id="8_0dcdf"]
+[ext_resource type="Texture2D" uid="uid://bu1o05ie4v1dv" path="res://textures/inventory/numbers/8.png" id="9_xesgk"]
+[ext_resource type="Texture2D" uid="uid://bqg0xvy4vesoe" path="res://textures/inventory/numbers/9.png" id="10_mersf"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_5kyk8"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("1_5xva7")
+"texture": ExtResource("1_8vo5u")
 }, {
 "duration": 1.0,
-"texture": ExtResource("2_bibbm")
+"texture": ExtResource("2_i13mi")
 }, {
 "duration": 1.0,
-"texture": ExtResource("3_7ug4w")
+"texture": ExtResource("3_qciba")
 }, {
 "duration": 1.0,
-"texture": ExtResource("4_yrt7s")
+"texture": ExtResource("4_whw3j")
 }, {
 "duration": 1.0,
-"texture": ExtResource("5_kjrvp")
+"texture": ExtResource("5_wthb3")
 }, {
 "duration": 1.0,
-"texture": ExtResource("6_cc7ks")
+"texture": ExtResource("6_k4a0l")
 }, {
 "duration": 1.0,
-"texture": ExtResource("7_8aymc")
+"texture": ExtResource("7_r16qw")
 }, {
 "duration": 1.0,
-"texture": ExtResource("8_v4mex")
+"texture": ExtResource("8_0dcdf")
 }, {
 "duration": 1.0,
-"texture": ExtResource("9_pg1u6")
+"texture": ExtResource("9_xesgk")
 }, {
 "duration": 1.0,
-"texture": ExtResource("10_yh08e")
+"texture": ExtResource("10_mersf")
 }],
 "loop": true,
 "name": &"default",
@@ -50,6 +50,7 @@ animations = [{
 }]
 
 [node name="Number" type="AnimatedSprite2D"]
+modulate = Color(0.717647, 0.717647, 0.717647, 1)
 position = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_5kyk8")
 frame = 8

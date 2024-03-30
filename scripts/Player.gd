@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+const CRETURE = "Player"
+const HOTBAR_CHILDREN = ["HFBars", "SelectedSlot", "MouseDetecter", "InventorySprite"]
 const COLLECTED_ITEM = preload("res://scenes/collected_item.tscn")
 const ARM_FRAME_OFFSETS = [Vector2(-2, 1), Vector2(-1, 1), Vector2(.5, 2), Vector2(1.5, 1.5), Vector2(3, .5)]
 const MAX_SPEED = 80.0
@@ -10,6 +12,8 @@ const DECELERATION = 300
 const HOTBAR_SLOTS = 4
 const SWORDS = ["stone_sword", "iron_sword", "diamond_sword"]
 
+var health = 8
+var fullness = 8
 var slot = 0
 var swordCooldown = 0.0
 var cursorItemOrigin = [0, 0]
@@ -22,7 +26,7 @@ var inventory = [
 var crafting = false
 
 func _physics_process(delta):
-		
+	
 	_update_slot()
 	
 	_move(delta)
@@ -35,7 +39,7 @@ func _update_hotbar():
 	
 	for child in $HotBar.get_children():
 		
-		if child.name != "SelectedSlot" and child.name != "MouseDetecter":
+		if !HOTBAR_CHILDREN.has(child.name):
 			
 			if child.row != -1:
 				child.queue_free()
@@ -49,6 +53,10 @@ func _update_hotbar():
 				item.index = index
 				item.row = row
 				item.item = inventory[row][index][0]
+				
+				if item.item == "invention":
+					item.blueprint = inventory[row][index][2]
+				
 				$HotBar.inventory[row][index] = item
 				$HotBar.add_child(item)
 
@@ -74,20 +82,11 @@ func _animate_arms(delta):
 	
 	else:
 		$BackArmAnimation.play("RESET")
-	
-	if SWORDS.has(inventory[0][slot][0]):
-		
-		if swordCooldown > 0:
-			$FrontArmAnimation.play("SwordCooldown")
-			swordCooldown -= delta
 			
-			if swordCooldown < 0:
-				swordCooldown = 0.0
-			
-	elif Input.is_action_pressed("click") and !$HotBar.mouseInInventory and !crafting:
+	if Input.is_action_pressed("click") and !$HotBar.mouseInInventory and !crafting:
 		$FrontArmAnimation.play("Action")
 		
-	elif Input.is_action_pressed("left") or Input.is_action_pressed("right"):
+	elif inventory[0][slot][0] != "invention" and (Input.is_action_pressed("left") or Input.is_action_pressed("right")):
 		$FrontArmAnimation.play("Walk")
 		$FrontArmAnimation.seek($LegsAnimation.current_animation_position)
 		
@@ -95,16 +94,26 @@ func _animate_arms(delta):
 		$FrontArmAnimation.play("RESET")
 	
 	if inventory[0][slot][0] == "invention":
+		$FrontArmAnimation.play("Holding")
 		$Torso/FrontArm/HeldInvention.blueprint = $HotBar.inventory[0][slot].blueprint
 		$Torso/FrontArm/HeldInvention._update()
 		$Torso/FrontArm/HeldInvention.show()
-		$FrontArmAnimation.play("Holding")
+		$Torso/FrontArm.offset = Vector2(3.5, 0)
+		$Torso/FrontArm.position = Vector2(0, -3)
+		$Torso/FrontArm.frame = 5
 		$Torso/FrontArm.flip_h = false
 		
-	
+		if get_local_mouse_position().x * $Torso.scale.x > 0:
+			$Torso/FrontArm.look_at(get_global_mouse_position())
+		
+		else:
+			$Torso/FrontArm.look_at(Vector2(0, -1) + position)
+		
 	else:
 		$Torso/FrontArm.flip_h = true
 		$Torso/FrontArm/HeldInvention.hide()
+		$Torso/FrontArm.position = Vector2(-.5, -1.5)
+		$Torso/FrontArm.rotation = 0
 
 func _move(delta):
 	
@@ -160,3 +169,7 @@ func _move(delta):
 			velocity.x = 0
 	
 	move_and_slide()
+
+func _damage(damage):
+	health -= damage
+	$HotBar._update_hf()

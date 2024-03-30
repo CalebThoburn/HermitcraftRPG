@@ -5,13 +5,26 @@ const TB_TO_FRAME = ["barrel", "funnel", "glass_sole", "glass_top", "glass_cente
 const TB_INIT = Vector2(8, -2.5)
 const TB_SPACING = 3
 
-var handlePos
-
+var handlePos = Vector2(0, 0)
+var leverActivations = [[3, 2]]
+var items = [
+	[["air", 0], ["air", 0], ["air", 0], ["air", 0]], 
+	[["air", 0], ["air", 0], ["air", 0], ["air", 0]], 
+	[["air", 0], ["air", 0], ["air", 0], ["air", 0]], 
+	[["air", 0], ["air", 0], ["dirt", 0], ["air", 0]]]
 var blueprint = [
 	[null, null, null, null], 
 	[null, null, null, null], 
 	[null, null, null, null], 
 	[null, null, null, null]]
+
+@onready var player = get_node("../../../")
+@onready var tileMap = get_node("../../../../TileMap")
+
+func _physics_process(delta):
+	
+	if Input.is_action_just_pressed("right_click") and visible:
+		_use()
 
 func _update():
 	
@@ -30,13 +43,13 @@ func _update():
 				
 				if blueprint[row][index] == "shaft":
 					
-					if blueprint[row - 1][index] != "shaft" and blueprint[row + 1][index] != "shaft":
+					if _relitive(blueprint, row, -1)[index] != "shaft" and _relitive(blueprint, row, 1)[index] != "shaft":
 						tidBit.frame = TB_TO_FRAME.find("shaft_sole")
 					
-					elif blueprint[row - 1][index] != "shaft":
+					elif _relitive(blueprint, row, -1)[index] != "shaft":
 						tidBit.frame = TB_TO_FRAME.find("shaft_left")
 						
-					elif blueprint[row + 1][index] != "shaft":
+					elif _relitive(blueprint, row, 1)[index] != "shaft":
 						tidBit.frame = TB_TO_FRAME.find("shaft_right")
 					
 					else:
@@ -45,7 +58,27 @@ func _update():
 				else:
 					tidBit.frame = TB_TO_FRAME.find(blueprint[row][index])
 				
-				tidBit.position = TB_INIT + Vector2(row * TB_SPACING, index * TB_SPACING)
+				tidBit.position = TB_INIT + Vector2(row , index) * TB_SPACING
 				add_child(tidBit)
 	
 	position = -handlePos
+
+func _use():
+	
+	for poweredCoords in leverActivations:
+		var action = blueprint[poweredCoords[0]][poweredCoords[1]]
+		
+		if action == "tip":
+			var item = items[poweredCoords[0]][poweredCoords[1]][0]
+			
+			if tileMap.PLACEABLE_ITEMS.has(item):
+				
+				tileMap._place(item, tileMap.local_to_map(to_global(TB_INIT + Vector2(leverActivations[0][0], leverActivations[0][1]) * TB_SPACING + Vector2(16, 0))))
+
+func _relitive(list, index, shift):
+	
+	if index + shift > -1 and index + shift < list.size():
+		return list[index + shift]
+		
+	else:
+		return [null, null, null, null]

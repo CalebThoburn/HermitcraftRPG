@@ -67,10 +67,20 @@ func _process(delta):
 		get_node("../../Player/HotBar").mouseItem = output
 		output.reparent(get_node("../../Player/HotBar"))
 		_reset_board()
+	
+	if Input.is_action_just_pressed("left") or Input.is_action_just_pressed("right"):
+		_close()
+
+func _close():
+	get_node("../../Player").crafting = false
+	hide()
+	_reset_board()
 
 func _open():
 	get_node("../../Player").crafting = true
 	show()
+	
+	_reset_board()
 	
 	for bit in unlockedItems:
 		var resource = RESOURCE.instantiate()
@@ -79,8 +89,6 @@ func _open():
 		resource.bit = bit
 		resources[resource.index][floor(unlockedItems.find(bit) / 4)] = resource
 		add_child(resource)
-		
-	_reset_board()
 
 func _reset_board():
 	
@@ -99,8 +107,7 @@ func _reset_board():
 		
 		if !child.is_class("Area2D"):
 			
-			if child.row > -1:
-				child.queue_free()
+			child.queue_free()
 	
 	output = ITEM.instantiate()
 	output.row = -1

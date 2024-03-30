@@ -1,0 +1,29 @@
+[gd_scene load_steps=6 format=3 uid="uid://3bhudjxox601"]
+
+[ext_resource type="Texture2D" uid="uid://b4skn172i1o2o" path="res://textures/inventory/HalfHeart1.png" id="1_yiics"]
+[ext_resource type="Texture2D" uid="uid://bo042ka64xeol" path="res://textures/inventory/HalfHeart2.png" id="2_nqket"]
+[ext_resource type="Texture2D" uid="uid://bqoq7lq8awpqm" path="res://textures/inventory/HalfHunger1.png" id="3_oaev1"]
+[ext_resource type="Texture2D" uid="uid://dswwcu6x4o7lk" path="res://textures/inventory/HalfHunger2.png" id="4_cruv5"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_djfn4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_yiics")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_nqket")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_oaev1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_cruv5")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="HealthFullness" type="AnimatedSprite2D"]
+sprite_frames = SubResource("SpriteFrames_djfn4")

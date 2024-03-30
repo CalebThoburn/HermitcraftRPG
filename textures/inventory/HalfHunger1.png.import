@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://swttb5u6k7k4"
-path="res://.godot/imported/hotbar.png-984f863b89c3ccb9cd09d10138613fbf.ctex"
+uid="uid://bqoq7lq8awpqm"
+path="res://.godot/imported/HalfHunger1.png-0bbd58259868d2eb7c1cdd571b437789.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://textures/hotbar/hotbar.png"
-dest_files=["res://.godot/imported/hotbar.png-984f863b89c3ccb9cd09d10138613fbf.ctex"]
+source_file="res://textures/inventory/HalfHunger1.png"
+dest_files=["res://.godot/imported/HalfHunger1.png-0bbd58259868d2eb7c1cdd571b437789.ctex"]
 
 [params]
 
