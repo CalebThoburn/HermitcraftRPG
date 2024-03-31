@@ -111,7 +111,7 @@ func _update_player_sight():
 		
 	if result.size() > 0:
 		var pos = result.position
-		$PlayerCursor.position = (pos + (get_node("../Player").position - get_global_mouse_position()).normalized() * -BLOCK_SPACING / 2) / BLOCK_SPACING
+		$PlayerCursor.position = (Vector2(local_to_map((pos + (get_node("../Player").position - get_global_mouse_position()).normalized() * -BLOCK_SPACING / 2))) + Vector2(.5, .5)) * BLOCK_SPACING
 	
 	else:
 		$PlayerCursor.position = round(get_local_mouse_position() / BLOCK_SPACING - Vector2(.5, .5)) * BLOCK_SPACING + Vector2(BLOCK_SPACING / 2, BLOCK_SPACING / 2)

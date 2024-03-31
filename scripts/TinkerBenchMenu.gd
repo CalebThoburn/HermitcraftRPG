@@ -1,5 +1,6 @@
 extends Sprite2D
 
+const WIRE = preload("res://scenes/wire.tscn")
 const ITEM = preload("res://scenes/collected_item.tscn")
 const RESOURCE = preload("res://scenes/tinker_resource.tscn")
 const INITIAL_X = -9
@@ -33,6 +34,16 @@ func _process(delta):
 	
 	var mouseGridPos = round((get_local_mouse_position() - Vector2(INITIAL_X, INITIAL_Y)) / 9)
 	
+	if Input.is_action_just_pressed("right_click") and mouseInGrid:
+		
+		if blueprint[mouseGridPos.x][mouseGridPos.y] == "lever_b":
+			
+			var wire = WIRE.instantiate()
+			wire.position = round(get_local_mouse_position())
+			wire.origin = Vector2(0, 0)
+			wire.color = 0
+			add_child(wire)
+	
 	if Input.is_action_just_pressed("click") and mouseInResources:
 		
 		if mouseItem != null:
@@ -63,13 +74,22 @@ func _process(delta):
 		output.blueprint = blueprint
 		output._update_invention()
 	
-	if Input.is_action_just_pressed("click") and mouseInOutput and get_node("../../Player/HotBar").mouseItem == null:
+	if Input.is_action_just_pressed("click") and mouseInOutput and get_node("../../Player/HotBar").mouseItem == null and _check_valid(blueprint):
 		get_node("../../Player/HotBar").mouseItem = output
 		output.reparent(get_node("../../Player/HotBar"))
 		_reset_board()
+		_set_resources()
 	
 	if Input.is_action_just_pressed("left") or Input.is_action_just_pressed("right"):
 		_close()
+
+func _check_valid(blueprint):
+	
+	if blueprint == [[null, null, null, null], [null, null, null, null], [null, null, null, null], [null, null, null, null]]:
+		return false
+		
+	else:
+		return true
 
 func _close():
 	get_node("../../Player").crafting = false
@@ -79,8 +99,10 @@ func _close():
 func _open():
 	get_node("../../Player").crafting = true
 	show()
-	
 	_reset_board()
+	_set_resources()
+
+func _set_resources():
 	
 	for bit in unlockedItems:
 		var resource = RESOURCE.instantiate()

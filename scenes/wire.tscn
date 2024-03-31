@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://ckqhj7k37343a"]
+
+[ext_resource type="Script" path="res://scripts/Wire.gd" id="1_f7v8f"]
+
+[node name="Wire" type="Node2D"]
+position = Vector2(-63, 43)
+script = ExtResource("1_f7v8f")

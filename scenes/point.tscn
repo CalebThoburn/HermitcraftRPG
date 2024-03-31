@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://cqdq547doom61"]
+
+[ext_resource type="Texture2D" uid="uid://dypd7ler51yln" path="res://textures/crafting/Wire.png" id="1_40ybr"]
+
+[node name="point" type="Sprite2D"]
+texture = ExtResource("1_40ybr")
+offset = Vector2(0.5, -0.5)
+hframes = 3
