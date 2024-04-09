@@ -275,7 +275,7 @@ size = Vector2(12, 12)
 size = Vector2(35, 35)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_726ri"]
-size = Vector2(19, 37)
+size = Vector2(19, 36)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2lb6m"]
 size = Vector2(8, 8)
@@ -816,7 +816,7 @@ shape = SubResource("RectangleShape2D_y2gva")
 [node name="MouseDetectorResources" type="Area2D" parent="TileMap/TinkerBenchMenu"]
 
 [node name="MouseDetectorArea" type="CollisionShape2D" parent="TileMap/TinkerBenchMenu/MouseDetectorResources"]
-position = Vector2(-31.5, 0.5)
+position = Vector2(-31.5, 0)
 shape = SubResource("RectangleShape2D_726ri")
 
 [node name="MouseDetectorOutput" type="Area2D" parent="TileMap/TinkerBenchMenu"]

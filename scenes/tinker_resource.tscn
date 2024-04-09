@@ -15,7 +15,6 @@ texture = ExtResource("2_a6vn7")
 offset = Vector2(4, 4)
 hframes = 6
 vframes = 2
-frame = 10
 
 [node name="mouseDetecter" type="Area2D" parent="."]
 

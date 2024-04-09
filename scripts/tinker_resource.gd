@@ -5,6 +5,8 @@ const BITS = ["shaft", "tip", "funnel", "barrel", "handle", "glass", "lever_l", 
 var row # -1 for mouse
 var index # -1 for sidebar
 var bit
+var anchor = "b"
+var action = 0
 
 var touchingMouse = false
 
@@ -17,13 +19,20 @@ func _ready():
 	
 	if row == -1:
 		position = get_parent().get_local_mouse_position()
-		
-	elif index < 0:
-		pass
-		
-	$ItemSprite.frame = BITS.find(bit)
+	
+	if bit == "lever":
+		$ItemSprite.frame = BITS.find(bit + "_" + anchor)
+	
+	else:
+		$ItemSprite.frame = BITS.find(bit)
 
 func _process(delta):
+	
+	if get_parent().mouseItem == self:
+		z_index = 2
+		
+	else:
+		z_index = 0
 	
 	_crafting_menu_stuff()
 	
@@ -46,3 +55,8 @@ func _on_mouse_detecter_mouse_entered():
 
 func _on_mouse_detecter_mouse_exited():
 	touchingMouse = false
+
+func _update_bit():
+	
+	if bit == "lever":
+		$ItemSprite.frame = BITS.find(bit + "_" + anchor)

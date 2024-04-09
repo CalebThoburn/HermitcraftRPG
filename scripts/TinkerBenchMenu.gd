@@ -1,5 +1,6 @@
 extends Sprite2D
 
+const ACTION_SELECT = preload("res://scenes/lever_action_select.tscn")
 const WIRE = preload("res://scenes/wire.tscn")
 const ITEM = preload("res://scenes/collected_item.tscn")
 const RESOURCE = preload("res://scenes/tinker_resource.tscn")
@@ -7,6 +8,7 @@ const INITIAL_X = -9
 const INITIAL_Y = -13
 const SPACING = 9
 const OUTPUT_POS = Vector2(37, 14)
+const WIRE_OFFSET = {"tip": Vector2(-5, 1), "funnel": Vector2(0, -4), "b": Vector2(0, 6), "t": Vector2(0, -3), "l": Vector2(-5, 1), "r": Vector2(4, 1)}
 
 var output
 var mouseInOutput = false
@@ -28,58 +30,156 @@ var blueprint = [
 	[null, null, null, null], 
 	[null, null, null, null], 
 	[null, null, null, null]]
-var unlockedItems = ["barrel", "shaft", "tip", "funnel", "handle", "glass", "lever_b"]
+var anchors = [
+	["b", "b", "b", "b"],
+	["b", "b", "b", "b"],
+	["b", "b", "b", "b"],
+	["b", "b", "b", "b"]]
+var connectionsFrom = [
+	[null, null, null, null], 
+	[null, null, null, null], 
+	[null, null, null, null], 
+	[null, null, null, null]]
+var connectionsTo = [
+	[null, null, null, null], 
+	[null, null, null, null], 
+	[null, null, null, null], 
+	[null, null, null, null]]
+var unlockedItems = ["barrel", "shaft", "tip", "funnel", "handle", "glass", "lever"]
+var wire = null
+var mouseIn = false
 
 func _process(delta):
 	
-	var mouseGridPos = round((get_local_mouse_position() - Vector2(INITIAL_X, INITIAL_Y)) / 9)
+	if mouseInGrid or mouseInOutput or mouseInResources:
+		mouseIn = true
 	
-	if Input.is_action_just_pressed("right_click") and mouseInGrid:
+	else:
+		mouseIn = false
+	
+	var mouseGridPos = round((get_local_mouse_position() - Vector2(INITIAL_X, INITIAL_Y)) / SPACING)
+	
+	if get_node("../../Player/HotBar").mouseItem == null:
 		
-		if blueprint[mouseGridPos.x][mouseGridPos.y] == "lever_b":
+		if Input.is_action_just_pressed("right_click") and mouseInGrid:
 			
-			var wire = WIRE.instantiate()
-			wire.position = round(get_local_mouse_position())
-			wire.origin = Vector2(0, 0)
-			wire.color = 0
-			add_child(wire)
-	
-	if Input.is_action_just_pressed("click") and mouseInResources:
+			if wire == null:
+				
+				if blueprint[mouseGridPos.x][mouseGridPos.y] == "lever" and connectionsFrom[mouseGridPos.x][mouseGridPos.y] == null:
+					wire = WIRE.instantiate()
+					wire.position = Vector2(0, 0)
+					wire.origin = mouseGridPos * SPACING + Vector2(INITIAL_X, INITIAL_Y)
+					wire.color = 0
+					wire.position += WIRE_OFFSET[anchors[mouseGridPos.x][mouseGridPos.y]]
+					wire.from = mouseGridPos
+					connectionsFrom[wire.from.x][wire.from.y] = wire
+					add_child(wire)
+			
+			else:
+				
+				match blueprint[mouseGridPos.x][mouseGridPos.y]:
+					
+					"tip":
+						connectionsTo[mouseGridPos.x][mouseGridPos.y] = wire
+						wire.to = mouseGridPos
+						wire.attached = true
+						wire.end = mouseGridPos * SPACING + WIRE_OFFSET["tip"] + Vector2(INITIAL_X, INITIAL_Y) - WIRE_OFFSET[anchors[wire.from.x][wire.from.y]]
+						wire = null
+						output._update_invention()
+					
+					"funnel":
+						connectionsTo[mouseGridPos.x][mouseGridPos.y] = wire
+						wire.to = mouseGridPos
+						wire.attached = true
+						wire.end = mouseGridPos * SPACING + WIRE_OFFSET["funnel"] + Vector2(INITIAL_X, INITIAL_Y) - WIRE_OFFSET[anchors[wire.from.x][wire.from.y]]
+						wire = null
+						output._update_invention()
+						
+					_:
+						wire.queue_free()
+						wire = null
 		
-		if mouseItem != null:
-			mouseItem.queue_free()
+		if Input.is_action_just_pressed("click") and mouseInResources:
+			
+			if mouseItem != null:
+				mouseItem.queue_free()
+			
+			if resources[mouseGridPos.y][-(mouseGridPos.x + 2)] != null:
+				mouseItem = RESOURCE.instantiate()
+				mouseItem.row = -1
+				mouseItem.index = 0
+				mouseItem.bit = resources[mouseGridPos.y][-(mouseGridPos.x + 2)].bit
+				add_child(mouseItem)
 		
-		if resources[mouseGridPos.y][-(mouseGridPos.x + 2)] != null:
-			mouseItem = RESOURCE.instantiate()
-			mouseItem.row = -1
-			mouseItem.index = 0
-			mouseItem.bit = resources[mouseGridPos.y][-(mouseGridPos.x + 2)].bit
-			add_child(mouseItem)
-	
-	if Input.is_action_just_pressed("click") and mouseInGrid:
-		var transferingItem = mouseItem
-		blueprint[mouseGridPos.x][mouseGridPos.y] = null
+		if Input.is_action_just_pressed("click") and mouseInGrid:
+			var transferingItem = mouseItem
+			blueprint[mouseGridPos.x][mouseGridPos.y] = null
+			
+			if mouseItem != null:
+				transferingItem.row = mouseGridPos.x
+				transferingItem.index = mouseGridPos.y
+				blueprint[mouseGridPos.x][mouseGridPos.y] = transferingItem.bit
+				
+				if transferingItem.bit == "lever":
+					
+					if _relitive(blueprint[mouseGridPos.x], mouseGridPos.y, 1) != null:
+						anchors[mouseGridPos.x][mouseGridPos.y] = "b"
+						transferingItem.anchor = "b"
+						
+					elif _relitive(blueprint, mouseGridPos.x, 1)[mouseGridPos.y] != null:
+						anchors[mouseGridPos.x][mouseGridPos.y] = "r"
+						transferingItem.anchor = "r"
+						
+					elif _relitive(blueprint, mouseGridPos.x, -1)[mouseGridPos.y] != null:
+						anchors[mouseGridPos.x][mouseGridPos.y] = "l"
+						transferingItem.anchor = "l"
+						
+					elif _relitive(blueprint[mouseGridPos.x], mouseGridPos.y, -1) != null:
+						anchors[mouseGridPos.x][mouseGridPos.y] = "t"
+						transferingItem.anchor = "t"
+					
+					else:
+						anchors[mouseGridPos.x][mouseGridPos.y] = "b"
+						transferingItem.anchor = "b"
+					
+					transferingItem._update_bit()
+					
+					if transferingItem.action == 0:
+						var actionSelect = ACTION_SELECT.instantiate()
+						transferingItem.add_child(actionSelect)
+			
+			mouseItem = grid[mouseGridPos.x][mouseGridPos.y]
+			
+			if grid[mouseGridPos.x][mouseGridPos.y] != null:
+				mouseItem.row = -1
+				
+				if connectionsTo[mouseGridPos.x][mouseGridPos.y] != null:
+					connectionsTo[mouseGridPos.x][mouseGridPos.y].queue_free()
+					connectionsTo[mouseGridPos.x][mouseGridPos.y] = null
+				
+				elif connectionsFrom[mouseGridPos.x][mouseGridPos.y] != null:
+					connectionsFrom[mouseGridPos.x][mouseGridPos.y].queue_free()
+					connectionsFrom[mouseGridPos.x][mouseGridPos.y] = null
+				
+				if mouseItem.action == 0 and mouseItem.bit == "lever":
+					mouseItem.get_node("LeverActionSelect").queue_free()
+			
+			grid[mouseGridPos.x][mouseGridPos.y] = transferingItem
+			output._update_invention()
 		
-		if mouseItem != null:
-			transferingItem.row = mouseGridPos.x
-			transferingItem.index = mouseGridPos.y
-			blueprint[mouseGridPos.x][mouseGridPos.y] = transferingItem.bit
+		if Input.is_action_just_pressed("click") and mouseInOutput and _check_valid(blueprint):
+			get_node("../../Player/HotBar").mouseItem = output
+			output.reparent(get_node("../../Player/HotBar"))
+			_reset_board()
+			_set_resources()
 		
-		mouseItem = grid[mouseGridPos.x][mouseGridPos.y]
+	elif mouseInGrid and Input.is_action_just_pressed("click"):
 		
-		if grid[mouseGridPos.x][mouseGridPos.y] != null:
-			mouseItem.row = -1
+		var transitioningItem = output.items[mouseGridPos.x][mouseGridPos.y]
+		output.items[mouseGridPos.x][mouseGridPos.y] = [get_node("../../Player/HotBar").mouseItem.item, get_node("../../Player/HotBar").mouseItem.count]
+		get_node("../../Player/HotBar").mouseItem.item = transitioningItem[0]
+		get_node("../../Player/HotBar").mouseItem.count = transitioningItem[1]
 		
-		grid[mouseGridPos.x][mouseGridPos.y] = transferingItem
-		output.blueprint = blueprint
-		output._update_invention()
-	
-	if Input.is_action_just_pressed("click") and mouseInOutput and get_node("../../Player/HotBar").mouseItem == null and _check_valid(blueprint):
-		get_node("../../Player/HotBar").mouseItem = output
-		output.reparent(get_node("../../Player/HotBar"))
-		_reset_board()
-		_set_resources()
-	
 	if Input.is_action_just_pressed("left") or Input.is_action_just_pressed("right"):
 		_close()
 
@@ -124,7 +224,22 @@ func _reset_board():
 		[null, null, null, null], 
 		[null, null, null, null], 
 		[null, null, null, null]]
-		
+	anchors = [
+		["b", "b", "b", "b"],
+		["b", "b", "b", "b"],
+		["b", "b", "b", "b"],
+		["b", "b", "b", "b"]]
+	connectionsFrom = [
+		[null, null, null, null], 
+		[null, null, null, null], 
+		[null, null, null, null], 
+		[null, null, null, null]]
+	connectionsTo = [
+		[null, null, null, null], 
+		[null, null, null, null], 
+		[null, null, null, null], 
+		[null, null, null, null]]
+	
 	for child in get_children():
 		
 		if !child.is_class("Area2D"):
@@ -155,3 +270,21 @@ func _on_mouse_detector_output_mouse_entered():
 
 func _on_mouse_detector_output_mouse_exited():
 	mouseInOutput = false
+
+func _relitive(list, index, shift):
+	var ret
+	
+	if typeof(list[0]) == 28:
+		ret = []
+		
+		for item in list[0]:
+			ret.append(null)
+		
+	else:
+		ret = null
+	
+	if index + shift > -1 and index + shift < list.size():
+		return list[index + shift]
+		
+	else:
+		return ret

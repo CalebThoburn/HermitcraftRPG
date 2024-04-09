@@ -6,6 +6,9 @@ const POINT = preload("res://scenes/point.tscn")
 var color
 var origin
 var end
+var from
+var to
+var attached = false
 
 func _ready():
 	_update()
@@ -18,7 +21,8 @@ func _update():
 	for child in get_children():
 		child.queue_free()
 	
-	end = get_local_mouse_position() + Vector2(1, 0)
+	if !attached:
+		end = get_local_mouse_position() + Vector2(1, 0)
 	
 	var start_x
 	var end_x
@@ -43,12 +47,14 @@ func _update():
 				add_child(point)
 		else:
 			
-			for y in range(round(_ellipses_y_at_x(x) - 1) , round(_ellipses_y_at_x(x - 1))):
-				var point = POINT.instantiate()
-				point.position.x = x
-				point.position.y = y
-				point.frame = color
-				add_child(point)
+			if (_ellipses_y_at_x(x) < 0 or _ellipses_y_at_x(x ) > 0 or _ellipses_y_at_x(x) == 0):
+				
+				for y in range(round(_ellipses_y_at_x(x) - 1) , round(_ellipses_y_at_x(x - 1))):
+					var point = POINT.instantiate()
+					point.position.x = x
+					point.position.y = y
+					point.frame = color
+					add_child(point)
 	
 func _ellipses_y_at_x(x):
 	var o

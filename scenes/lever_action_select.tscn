@@ -1,0 +1,47 @@
+[gd_scene load_steps=6 format=3 uid="uid://b5vsas7r4bjyn"]
+
+[ext_resource type="Texture2D" uid="uid://gf3h3l66p86w" path="res://textures/crafting/leverActivationSelect.png" id="1_hbnbs"]
+[ext_resource type="Script" path="res://scripts/LeverActionSelect.gd" id="2_pi55i"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sor0q"]
+size = Vector2(10, 9)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5ters"]
+size = Vector2(10, 9)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_x6lu0"]
+size = Vector2(10, 9)
+
+[node name="LeverActionSelect" type="Sprite2D"]
+position = Vector2(0, -10)
+texture = ExtResource("1_hbnbs")
+offset = Vector2(0, 0.5)
+vframes = 2
+script = ExtResource("2_pi55i")
+
+[node name="Action1" type="Area2D" parent="."]
+
+[node name="Action1Col" type="CollisionShape2D" parent="Action1"]
+position = Vector2(-11, 0.5)
+shape = SubResource("RectangleShape2D_sor0q")
+
+[node name="Action2" type="Area2D" parent="."]
+position = Vector2(11, 0)
+
+[node name="Action2Col" type="CollisionShape2D" parent="Action2"]
+position = Vector2(0, 0.5)
+shape = SubResource("RectangleShape2D_5ters")
+
+[node name="Action3" type="Area2D" parent="."]
+position = Vector2(-11, 0)
+
+[node name="Action3Col" type="CollisionShape2D" parent="Action3"]
+position = Vector2(11, 0.5)
+shape = SubResource("RectangleShape2D_x6lu0")
+
+[connection signal="mouse_entered" from="Action1" to="." method="_on_action_1_mouse_entered"]
+[connection signal="mouse_exited" from="Action1" to="." method="_mouse_exited"]
+[connection signal="mouse_entered" from="Action2" to="." method="_on_action_2_mouse_entered"]
+[connection signal="mouse_exited" from="Action2" to="." method="_mouse_exited"]
+[connection signal="mouse_entered" from="Action3" to="." method="_on_action_3_mouse_entered"]
+[connection signal="mouse_exited" from="Action3" to="." method="_mouse_exited"]

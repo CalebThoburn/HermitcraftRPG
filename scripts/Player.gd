@@ -56,6 +56,9 @@ func _update_hotbar():
 				
 				if item.item == "invention":
 					item.blueprint = inventory[row][index][2]
+					item.anchors = inventory[row][index][3]
+					item.activations = inventory[row][index][4]
+					item.items = inventory[row][index][5]
 				
 				$HotBar.inventory[row][index] = item
 				$HotBar.add_child(item)
@@ -95,7 +98,6 @@ func _animate_arms(delta):
 	
 	if inventory[0][slot][0] == "invention":
 		$FrontArmAnimation.play("Holding")
-		$Torso/FrontArm/HeldInvention.blueprint = $HotBar.inventory[0][slot].blueprint
 		$Torso/FrontArm/HeldInvention._update()
 		$Torso/FrontArm/HeldInvention.show()
 		$Torso/FrontArm.offset = Vector2(3.5, 0)

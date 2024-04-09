@@ -16,6 +16,13 @@ var index
 var count
 var item
 var blueprint
+var anchors
+var activations
+var items = [
+	[["air", 0], ["air", 0], ["air", 0], ["air", 0]], 
+	[["air", 0], ["air", 0], ["air", 0], ["air", 0]], 
+	[["air", 0], ["air", 0], ["air", 0], ["air", 0]], 
+	[["air", 0], ["air", 0], ["air", 0], ["air", 0]]]
 var touchingMouse = false
 
 @onready var tileMap = get_node("../../../TileMap")
@@ -36,7 +43,7 @@ func _ready():
 		position.x = index * get_parent().ITEM_X_SPACING + get_parent().INITIAL_X
 
 func _process(delta):
-	
+		
 	if get_parent().name == "TinkerBenchMenu":
 		_crafting_output()
 	
@@ -85,6 +92,19 @@ func _update_count():
 
 func _update_invention():
 	
+	if get_parent().name == "TinkerBenchMenu":
+		blueprint = get_parent().blueprint
+		anchors = get_parent().anchors
+		activations = []
+		
+		for row in get_parent().connectionsFrom:
+			
+			for connection in row:
+				
+				if connection != null:
+					
+					activations.append([get_parent().grid[connection.from[0]][connection.from[1]].action, connection.to])
+	
 	for child in $TidBits.get_children():
 		child.queue_free()
 	
@@ -96,7 +116,11 @@ func _update_invention():
 				var tidBit = TID_BIT.instantiate()
 				var bit = blueprint[tbRow][tbIndex]
 				tidBit.position = Vector2(TB_IY + TB_SPACING * tbRow, TB_IX + TB_SPACING * tbIndex)
-				tidBit.frame = TID_BITS.find(bit)
+				
+				if bit == "lever":
+					tidBit.frame = TID_BITS.find(bit + "_" + anchors[tbRow][tbIndex])
+				else:
+					tidBit.frame = TID_BITS.find(bit)
 				
 				if bit == "shaft":
 					
@@ -112,9 +136,19 @@ func _on_mouse_detecter_mouse_exited():
 	touchingMouse = false
 
 func _relitive(list, index, shift):
+	var ret
+	
+	if typeof(list[0]) == 28:
+		ret = []
+		
+		for item in list[0]:
+			ret.append(null)
+		
+	else:
+		ret = null
 	
 	if index + shift > -1 and index + shift < list.size():
 		return list[index + shift]
 		
 	else:
-		return [null, null, null, null]
+		return ret
