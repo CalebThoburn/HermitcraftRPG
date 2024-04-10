@@ -1,5 +1,6 @@
 extends Node2D
 
+const THROWN_BLOCK = preload("res://scenes/thrown_block.tscn")
 const MAX_STACK = {"barrel": 64, "funnel": 8, "tip": 1}
 const TB = preload("res://scenes/large_tid_bit.tscn")
 const TB_TO_FRAME = ["barrel", "funnel", "glass_sole", "glass_top", "glass_center", "glass_bottom", "air", "tip", "handle", "shaft_sole", "shaft_left", "shaft_center", "shaft_right", "air", "lever_right_off", "lever_right_on", "lever_down_off", "lever_down_on", "lever_up_off", "lever_up_on", "lever_left_on", "lever_left_off"]
@@ -100,7 +101,16 @@ func _use(press):
 					if items[poweredCoords.x][poweredCoords.y][1] == 0:
 						items[poweredCoords.x][poweredCoords.y] = ["air", 0]
 					
-					tileMap._place(item, tileMap.local_to_map(to_global(TB_INIT + Vector2(leverActivations[0][1][0], leverActivations[0][1][1]) * TB_SPACING + Vector2(16, 0))))
+					var thrownBlock = THROWN_BLOCK.instantiate()
+					thrownBlock.block = item
+					thrownBlock.vel = Vector2(300, 0).rotated(get_parent().rotation)
+					
+					if get_node("../../").scale.x == -1:
+						thrownBlock.vel = thrownBlock.vel.rotated(PI)
+						thrownBlock.vel.y *= -1
+					
+					thrownBlock.position = to_global(TB_INIT + Vector2(leverActivations[0][1][0], leverActivations[0][1][1]) * TB_SPACING)
+					get_node("../../../../").add_child(thrownBlock)
 			
 			"funnel":
 				

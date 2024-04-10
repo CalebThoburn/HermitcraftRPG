@@ -8,7 +8,7 @@ const MAX_SPEED = 80.0
 const ACCELERATION = 300.0
 const JUMP_VELOCITY = -100.0
 const GRAVITY = 300.0
-const DECELERATION = 300
+const DECELERATION = 300.0
 const HOTBAR_SLOTS = 4
 const SWORDS = ["stone_sword", "iron_sword", "diamond_sword"]
 
