@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3 uid="uid://csfuv1n2at3dj"]
+
+[ext_resource type="Script" path="res://scripts/cobweb.gd" id="1_ocqty"]
+[ext_resource type="Texture2D" uid="uid://bc2lq4k74ulcq" path="res://textures/FloorItems.png" id="2_rmdll"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_63gf5"]
+size = Vector2(8, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7nhwf"]
+size = Vector2(12, 12)
+
+[node name="Web" type="CharacterBody2D"]
+position = Vector2(-261, -88)
+collision_layer = 0
+script = ExtResource("1_ocqty")
+
+[node name="BlockSprite" type="Sprite2D" parent="."]
+position = Vector2(-6, -6)
+texture = ExtResource("2_rmdll")
+offset = Vector2(6, 6)
+hframes = 8
+vframes = 4
+frame = 27
+
+[node name="CobwebCollision" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_63gf5")
+
+[node name="StickArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 8
+
+[node name="StickAreaCollision" type="CollisionShape2D" parent="StickArea"]
+shape = SubResource("RectangleShape2D_7nhwf")
+
+[connection signal="body_entered" from="StickArea" to="." method="_on_stick_area_body_entered"]

@@ -127,6 +127,7 @@ func _physics_process(delta):
 							get_node("../").inventory[row][index].append(mouseItem.blueprint)
 							get_node("../").inventory[row][index].append(mouseItem.anchors)
 							get_node("../").inventory[row][index].append(mouseItem.activations)
+							get_node("../").inventory[row][index].append(mouseItem.items)
 						
 						mouseItem.row = row
 						mouseItem.index = index

@@ -168,17 +168,80 @@ func _process(delta):
 			output._update_invention()
 		
 		if Input.is_action_just_pressed("click") and mouseInOutput and _check_valid(blueprint):
+			
+			for bitRow in range(grid.size()):
+				
+				for bitIndex in range(grid[bitRow].size()):
+					
+					if grid[bitRow][bitIndex] != null:
+						output.items[bitRow][bitIndex] = grid[bitRow][bitIndex].item
+						
+			
 			get_node("../../Player/HotBar").mouseItem = output
 			output.reparent(get_node("../../Player/HotBar"))
 			_reset_board()
 			_set_resources()
 		
-	elif mouseInGrid and Input.is_action_just_pressed("click"):
+	elif mouseInGrid and Input.is_action_just_pressed("click") and get_node("../../Player/HotBar").mouseItem.item == "invention":
 		
-		var transitioningItem = output.items[mouseGridPos.x][mouseGridPos.y]
-		output.items[mouseGridPos.x][mouseGridPos.y] = [get_node("../../Player/HotBar").mouseItem.item, get_node("../../Player/HotBar").mouseItem.count]
+		_reset_board()
+		_set_resources()
+		
+		var inv = get_node("../../Player/HotBar").mouseItem
+		blueprint = inv.blueprint
+		
+		for row in range(blueprint.size()):
+			
+			for index in range(blueprint[row].size()):
+				
+				if blueprint[row][index] != null:
+					var resource = RESOURCE.instantiate()
+					grid[row][index] = resource
+					resource.row = row
+					resource.index = index
+					resource.bit = blueprint[row][index]
+					
+					match resource.bit:
+						
+						"lever":
+							
+							resource.anchor = inv.anchors[row][index]
+							anchors[row][index] = resource.anchor
+							resource.action = inv.activations
+							
+							for connection in inv.activations:
+								
+								if connection[2] == Vector2(row, index):
+									resource.action = connection[0]
+									var wire = WIRE.instantiate()
+									wire.position = Vector2(0, 0)
+									wire.from = connection[2]
+									wire.to = connection[1]
+									wire.end = connection[1] * SPACING + WIRE_OFFSET[blueprint[connection[1].x][connection[1].y]] + Vector2(INITIAL_X, INITIAL_Y) - WIRE_OFFSET[anchors[wire.from.x][wire.from.y]]
+									wire.origin = connection[2] * SPACING + Vector2(INITIAL_X, INITIAL_Y)
+									wire.color = 0
+									wire.position += WIRE_OFFSET[anchors[connection[2].x][connection[2].y]]
+									connectionsFrom[wire.from.x][wire.from.y] = wire
+									connectionsTo[wire.to.x][wire.to.y] = wire
+									wire.attached = true
+									add_child(wire)
+						
+						"barrel":
+							resource.item = inv.items[row][index]
+					
+					add_child(resource)
+					inv.queue_free()
+					get_node("../../Player/HotBar").mouseItem = null
+					output._update_invention()
+					
+	elif mouseInGrid and Input.is_action_just_pressed("click") and blueprint[mouseGridPos.x][mouseGridPos.y] == "barrel":
+		
+		var transitioningItem = grid[mouseGridPos.x][mouseGridPos.y].item
+		
+		grid[mouseGridPos.x][mouseGridPos.y].item = [get_node("../../Player/HotBar").mouseItem.item, get_node("../../Player/HotBar").mouseItem.count]
 		get_node("../../Player/HotBar").mouseItem.item = transitioningItem[0]
 		get_node("../../Player/HotBar").mouseItem.count = transitioningItem[1]
+		get_node("../../Player/HotBar").mouseItem.get_node("ItemSprite").frame = get_node("../../Player/HotBar").mouseItem.ITEMS.find(get_node("../../Player/HotBar").mouseItem.item)
 		
 	if Input.is_action_just_pressed("left") or Input.is_action_just_pressed("right"):
 		_close()

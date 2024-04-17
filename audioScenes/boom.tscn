@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://bmywwal6welya"]
+
+[ext_resource type="AudioStream" uid="uid://b8sy40j255xg2" path="res://audio/Boom.mp3" id="1_v5f3t"]
+[ext_resource type="Script" path="res://scripts/sound.gd" id="2_d63qe"]
+
+[node name="Boom" type="AudioStreamPlayer2D"]
+stream = ExtResource("1_v5f3t")
+autoplay = true
+script = ExtResource("2_d63qe")
+
+[connection signal="finished" from="." to="." method="_on_finished"]

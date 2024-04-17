@@ -1,8 +1,10 @@
 extends Node2D
 
+const CREATURES = {"boom_beatle": preload("res://scenes/boom_beatle.tscn")}
 const THROWN_BLOCK = preload("res://scenes/thrown_block.tscn")
-const MAX_STACK = {"barrel": 64, "funnel": 8, "tip": 1}
+const WEB = preload("res://scenes/web.tscn")
 const TB = preload("res://scenes/large_tid_bit.tscn")
+const MAX_STACK = {"barrel": 64, "funnel": 8, "tip": 1}
 const TB_TO_FRAME = ["barrel", "funnel", "glass_sole", "glass_top", "glass_center", "glass_bottom", "air", "tip", "handle", "shaft_sole", "shaft_left", "shaft_center", "shaft_right", "air", "lever_right_off", "lever_right_on", "lever_down_off", "lever_down_on", "lever_up_off", "lever_up_on", "lever_left_on", "lever_left_off"]
 const TB_INIT = Vector2(8, -2.5)
 const TB_SPACING = 3
@@ -94,23 +96,56 @@ func _use(press):
 			
 			"tip":
 				var item = items[poweredCoords.x][poweredCoords.y][0]
+				get_node("../Woosh").play()
 				
-				if tileMap.PLACEABLE_ITEMS.has(item):
-					items[poweredCoords.x][poweredCoords.y][1] -= 1
-					
-					if items[poweredCoords.x][poweredCoords.y][1] == 0:
-						items[poweredCoords.x][poweredCoords.y] = ["air", 0]
+				if tileMap.BLOCK_FRAME.has(item):
 					
 					var thrownBlock = THROWN_BLOCK.instantiate()
 					thrownBlock.block = item
-					thrownBlock.vel = Vector2(300, 0).rotated(get_parent().rotation)
+					thrownBlock.velocity = Vector2(300, 0).rotated(get_parent().rotation)
 					
 					if get_node("../../").scale.x == -1:
-						thrownBlock.vel = thrownBlock.vel.rotated(PI)
-						thrownBlock.vel.y *= -1
+						thrownBlock.velocity = thrownBlock.velocity.rotated(PI)
+						thrownBlock.velocity.y *= -1
 					
+					thrownBlock.velocity += get_node("../../../").velocity
 					thrownBlock.position = to_global(TB_INIT + Vector2(leverActivations[0][1][0], leverActivations[0][1][1]) * TB_SPACING)
 					get_node("../../../../").add_child(thrownBlock)
+					
+				else:
+					match item:
+					
+						"webs":
+							var web = WEB.instantiate()
+							web.position = to_global(TB_INIT + Vector2(leverActivations[0][1][0], leverActivations[0][1][1]) * TB_SPACING)
+							web.velocity = Vector2(300, 0).rotated(get_parent().rotation)
+							
+							if get_node("../../").scale.x == -1:
+								web.velocity = web.velocity.rotated(PI)
+								web.velocity.y *= -1
+							
+							web.velocity += get_node("../../../").velocity
+							get_node("../../../../").add_child(web)
+							
+						"boom_beatle":
+							var boom_beatle = CREATURES["boom_beatle"].instantiate()
+							boom_beatle.position = to_global(TB_INIT + Vector2(leverActivations[0][1][0], leverActivations[0][1][1]) * TB_SPACING)
+							boom_beatle.velocity = Vector2(300, 0).rotated(get_parent().rotation)
+							
+							if get_node("../../").scale.x == -1:
+								boom_beatle.velocity = boom_beatle.velocity.rotated(PI)
+								boom_beatle.velocity.y *= -1
+							
+							boom_beatle.velocity += get_node("../../../").velocity
+							get_node("../../../../").add_child(boom_beatle)
+						
+						_:
+							get_node("../Woosh").stop()
+					
+				items[poweredCoords.x][poweredCoords.y][1] -= 1
+					
+				if items[poweredCoords.x][poweredCoords.y][1] == 0:
+					items[poweredCoords.x][poweredCoords.y] = ["air", 0]
 			
 			"funnel":
 				

@@ -5,7 +5,7 @@ const NUMBER = preload("res://scenes/number.tscn")
 const NUMBER_Y = 2
 const INITIAL_NUMBER_X = 2
 const NUMBER_SPACING = -3
-const ITEMS = ["grass", "dirt", "sand", "gravel", "stone", "coal_ore", "iron_ore", "diamond_ore", "leaves", "log", "stripped_log", "plank", "crafting_table", "barrel", "post", "glass", "flint", "coal", "diamond", "apple", "sapling", "stone_sword", "iron_sword", "diamond_sword", "slab", "wool", "red_wool"]
+const ITEMS = ["grass", "dirt", "sand", "gravel", "stone", "coal_ore", "iron_ore", "diamond_ore", "leaves", "log", "stripped_log", "plank", "crafting_table", "barrel", "post", "glass", "flint", "coal", "diamond", "apple", "sapling", "stone_sword", "iron_sword", "diamond_sword", "slab", "wool", "red_wool", "webs", "boom_beatle"]
 const TID_BITS = ["barrel", "funnel", "glass", "air", "tip", "handle", "shaft_l", "shaft", "lever_r", "lever_b", "lever_t", "air", "lever_l"]
 const TB_SPACING = 2
 const TB_IX = -2.5
@@ -103,7 +103,7 @@ func _update_invention():
 				
 				if connection != null:
 					
-					activations.append([get_parent().grid[connection.from[0]][connection.from[1]].action, connection.to])
+					activations.append([get_parent().grid[connection.from[0]][connection.from[1]].action, connection.to, connection.from])
 	
 	for child in $TidBits.get_children():
 		child.queue_free()

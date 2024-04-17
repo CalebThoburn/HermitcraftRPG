@@ -1,0 +1,51 @@
+[gd_scene load_steps=7 format=3 uid="uid://bkor8viuj0d0q"]
+
+[ext_resource type="Script" path="res://scripts/BoomBeatle.gd" id="1_skkeo"]
+[ext_resource type="Texture2D" uid="uid://cvbveufv5t0kf" path="res://textures/cretures/boomBeatle/BoomBeatle.png" id="2_mnf7h"]
+[ext_resource type="Texture2D" uid="uid://bw01mvmeo0fuj" path="res://textures/cretures/boomBeatle/spark.png" id="3_nx6kr"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_y2s08"]
+size = Vector2(5, 2)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2qau1"]
+size = Vector2(13, 6)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_836q2"]
+radius = 26.0
+
+[node name="BoomBeatle" type="CharacterBody2D"]
+position = Vector2(-23, -6)
+collision_layer = 8
+script = ExtResource("1_skkeo")
+
+[node name="BoomBeatleCollision" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, 0)
+shape = SubResource("RectangleShape2D_y2s08")
+
+[node name="BoomRadius" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 24
+
+[node name="BoomRadiusCollision" type="CollisionShape2D" parent="BoomRadius"]
+position = Vector2(-0.5, -2)
+shape = SubResource("RectangleShape2D_2qau1")
+
+[node name="BoomBeatleSprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_mnf7h")
+offset = Vector2(0, -0.5)
+
+[node name="Spark" type="Sprite2D" parent="BoomBeatleSprite"]
+position = Vector2(-2.5, -0.5)
+texture = ExtResource("3_nx6kr")
+
+[node name="BlastRadius" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 24
+
+[node name="BlastRadiusCollision" type="CollisionShape2D" parent="BlastRadius"]
+position = Vector2(-4, 0)
+shape = SubResource("CircleShape2D_836q2")
+
+[connection signal="body_entered" from="BoomRadius" to="." method="_on_boom_radius_body_entered"]
+[connection signal="body_entered" from="BlastRadius" to="." method="_on_blast_radius_body_entered"]
+[connection signal="body_exited" from="BlastRadius" to="." method="_on_blast_radius_body_exited"]

@@ -5,8 +5,10 @@ const BITS = ["shaft", "tip", "funnel", "barrel", "handle", "glass", "lever_l", 
 var row # -1 for mouse
 var index # -1 for sidebar
 var bit
+var item = ["air", 0]
 var anchor = "b"
 var action = 0
+
 
 var touchingMouse = false
 

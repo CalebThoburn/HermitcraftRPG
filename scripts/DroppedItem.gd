@@ -1,10 +1,11 @@
 extends CharacterBody2D
 
+const CREATURE = "item"
 const LOOP_TIME = 3000.0
 const LOOP_DISTANCE = 10.0
 const GRAVITY = 300.0
-const ITEMS = ["grass", "dirt", "sand", "gravel", "stone", "coal_ore", "iron_ore", "diamond_ore", "leaves", "log", "stripped_log", "plank", "crafting_table", "barrel", "post", "glass", "flint", "coal", "diamond", "apple", "sapling", "stone_sword", "iron_sword", "diamond_sword", "slab", "wool", "red_wool"]
- 
+const ITEMS = ["grass", "dirt", "sand", "gravel", "stone", "coal_ore", "iron_ore", "diamond_ore", "leaves", "log", "stripped_log", "plank", "crafting_table", "barrel", "post", "glass", "flint", "coal", "diamond", "apple", "sapling", "stone_sword", "iron_sword", "diamond_sword", "slab", "wool", "red_wool", "webs", "boom_beatle"]
+
 var pickUpCooldown = .5
 var item
 var startTime

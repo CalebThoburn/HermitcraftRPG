@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://ne8eq3r5h03d" path="res://textures/Tileset.png" id="2_b3mgh"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_63gf5"]
-size = Vector2(12, 12)
+size = Vector2(8, 8)
 
 [node name="ThrownBlock" type="CharacterBody2D"]
 position = Vector2(-263, -88)

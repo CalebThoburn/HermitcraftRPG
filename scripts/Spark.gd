@@ -1,17 +1,23 @@
 extends CharacterBody2D
 
 const GRAVITY = 300.0
-const MAX_X_VEL = -10
-const MIN_X_VEL = -25
-const MAX_Y_VEL = -50
-const MIN_Y_VEL = -25
+const MAX_LENGTH = 50
+const MIN_LENGTH = 25
 const X_DECEL = 25
+const BOOM_MAX_LENGTH = 200
+const BOOM_MIN_LENGTH = 25
 
 var direction
+var boom
 
 func _ready():
-	velocity = Vector2(randf_range(MIN_X_VEL, MAX_X_VEL) * 2 * -(int(direction) - .5), randf_range(MIN_Y_VEL, MAX_Y_VEL))
 	
+	if boom:
+		velocity = Vector2(randf_range(BOOM_MIN_LENGTH, BOOM_MAX_LENGTH), 0).rotated(randf_range(-PI, -PI/2)).rotated(int(direction) * PI / 2)
+		
+	else:
+		velocity = Vector2(randf_range(MIN_LENGTH, MAX_LENGTH), 0).rotated(randf_range(-PI, -PI/2)).rotated(int(direction) * PI / 2)
+
 func _physics_process(delta):
 	
 	if X_DECEL * delta >= abs(velocity.x):
