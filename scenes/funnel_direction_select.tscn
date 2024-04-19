@@ -1,0 +1,46 @@
+[gd_scene load_steps=6 format=3 uid="uid://d3nlybqoucquq"]
+
+[ext_resource type="Texture2D" uid="uid://mw4mt3k20sbg" path="res://textures/crafting/FunnelDirectionSelect.png" id="1_b8f61"]
+[ext_resource type="Script" path="res://scripts/funnel_direction_select.gd" id="2_36fvu"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sor0q"]
+size = Vector2(10, 9)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5ters"]
+size = Vector2(10, 9)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_x6lu0"]
+size = Vector2(10, 9)
+
+[node name="FunnelDirectionSelect" type="Sprite2D"]
+position = Vector2(0, -10)
+texture = ExtResource("1_b8f61")
+offset = Vector2(0, 0.5)
+script = ExtResource("2_36fvu")
+
+[node name="Down" type="Area2D" parent="."]
+
+[node name="Action1Col" type="CollisionShape2D" parent="Down"]
+position = Vector2(-11, 0.5)
+shape = SubResource("RectangleShape2D_sor0q")
+
+[node name="Left" type="Area2D" parent="."]
+position = Vector2(11, 0)
+
+[node name="Action2Col" type="CollisionShape2D" parent="Left"]
+position = Vector2(0, 0.5)
+shape = SubResource("RectangleShape2D_5ters")
+
+[node name="Right" type="Area2D" parent="."]
+position = Vector2(-11, 0)
+
+[node name="Action3Col" type="CollisionShape2D" parent="Right"]
+position = Vector2(11, 0.5)
+shape = SubResource("RectangleShape2D_x6lu0")
+
+[connection signal="mouse_entered" from="Down" to="." method="_on_down_mouse_entered"]
+[connection signal="mouse_exited" from="Down" to="." method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="Left" to="." method="_on_left_mouse_entered"]
+[connection signal="mouse_exited" from="Left" to="." method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="Right" to="." method="_on_right_mouse_entered"]
+[connection signal="mouse_exited" from="Right" to="." method="_on_mouse_exited"]

@@ -20,6 +20,12 @@ func _ready():
 
 func _physics_process(delta):
 	
+	if get_parent().crafting:
+		position = -get_parent().position + get_node("../../TileMap/TinkerBenchMenu").position + Vector2(4, -30)
+	
+	else:
+		position = Vector2(0, -30)
+	
 	if !get_node("../../TileMap/TinkerBenchMenu").mouseIn and get_node("../../TileMap/TinkerBenchMenu").mouseItem == null:
 		
 		if Input.is_action_just_pressed("right_click") and mouseInInventory:
@@ -90,9 +96,6 @@ func _physics_process(delta):
 						
 						if mouseItem.item == "invention":
 							get_node("../").inventory[row][index].append(mouseItem.blueprint)
-							get_node("../").inventory[row][index].append(mouseItem.anchors)
-							get_node("../").inventory[row][index].append(mouseItem.activations)
-							get_node("../").inventory[row][index].append(mouseItem.items)
 						
 						inventory[row][index] = mouseItem
 						mouseItem.row = row
@@ -125,9 +128,6 @@ func _physics_process(delta):
 						
 						if mouseItem.item == "invention":
 							get_node("../").inventory[row][index].append(mouseItem.blueprint)
-							get_node("../").inventory[row][index].append(mouseItem.anchors)
-							get_node("../").inventory[row][index].append(mouseItem.activations)
-							get_node("../").inventory[row][index].append(mouseItem.items)
 						
 						mouseItem.row = row
 						mouseItem.index = index

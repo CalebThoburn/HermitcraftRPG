@@ -17,7 +17,8 @@ func _process(delta):
 			frame = 1
 	
 	if Input.is_action_just_pressed("click") and action != 0:
-		get_parent().action = action
+		get_parent().info["action"] = action
+		get_node("../../").selecting = false
 		queue_free()
 
 func _on_action_1_mouse_entered():

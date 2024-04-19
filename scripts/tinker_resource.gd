@@ -1,14 +1,11 @@
 extends Node2D
 
-const BITS = ["shaft", "tip", "funnel", "barrel", "handle", "glass", "lever_l", "lever_t", "lever_r", "lever_b"]
+const BITS = ["tip", "funnel_b", "funnel_r", "funnel_l", "barrel", "shaft", "trigger_l", "trigger_t", "trigger_r", "trigger_b", "wheel", "handle", "computer_xor", "computer_and", "computer_flip", "antenna_1", "antenna_2", "glass"]
 
 var row # -1 for mouse
 var index # -1 for sidebar
-var bit
+var info = {}
 var item = ["air", 0]
-var anchor = "b"
-var action = 0
-
 
 var touchingMouse = false
 
@@ -16,17 +13,19 @@ var touchingMouse = false
 
 func _ready():
 	
+	_update_bit()
 	position.y = index * get_parent().SPACING + get_parent().INITIAL_Y
 	position.x = row * get_parent().SPACING + get_parent().INITIAL_X
+	
 	
 	if row == -1:
 		position = get_parent().get_local_mouse_position()
 	
-	if bit == "lever":
-		$ItemSprite.frame = BITS.find(bit + "_" + anchor)
-	
+	if info["bit"] == "computer":
+		$ItemSprite.frame = BITS.find(info["type"])
+		
 	else:
-		$ItemSprite.frame = BITS.find(bit)
+		$ItemSprite.frame = BITS.find(info["bit"])
 
 func _process(delta):
 	
@@ -60,5 +59,10 @@ func _on_mouse_detecter_mouse_exited():
 
 func _update_bit():
 	
-	if bit == "lever":
-		$ItemSprite.frame = BITS.find(bit + "_" + anchor)
+	if info["bit"] == "trigger" or info["bit"] == "funnel":
+		
+			if info["anchor"] == null:
+				$ItemSprite.frame = BITS.find(info["bit"] + "_b")
+				
+			else:
+				$ItemSprite.frame = BITS.find(info["bit"] + "_" + info["anchor"])

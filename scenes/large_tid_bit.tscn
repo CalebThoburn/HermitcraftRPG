@@ -5,6 +5,5 @@
 [node name="LargeTidBit" type="Sprite2D"]
 position = Vector2(16.5, -4.5)
 texture = ExtResource("1_y3b2k")
-hframes = 7
+hframes = 6
 vframes = 4
-frame = 5

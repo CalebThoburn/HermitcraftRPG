@@ -34,6 +34,7 @@ var inventory = [
 var crafting = false
 var jumping = false
 var jumpedHeight = 0
+var lastInv
 
 func _physics_process(delta):
 	_decel_damage(delta)
@@ -70,9 +71,6 @@ func _update_hotbar():
 				
 				if item.item == "invention":
 					item.blueprint = inventory[row][index][2]
-					item.anchors = inventory[row][index][3]
-					item.activations = inventory[row][index][4]
-					item.items = inventory[row][index][5]
 				
 				$HotBar.inventory[row][index] = item
 				$HotBar.add_child(item)
@@ -111,8 +109,12 @@ func _animate_arms(delta):
 		$FrontArmAnimation.play("RESET")
 	
 	if inventory[0][slot][0] == "invention":
+		
+		if lastInv != inventory[0][slot]:
+			$Torso/FrontArm/HeldInvention._update()
+			lastInv = inventory[0][slot]
+			
 		$FrontArmAnimation.play("Holding")
-		$Torso/FrontArm/HeldInvention._update()
 		$Torso/FrontArm/HeldInvention.show()
 		$Torso/FrontArm.offset = Vector2(3.5, 0)
 		$Torso/FrontArm.position = Vector2(0, -3)

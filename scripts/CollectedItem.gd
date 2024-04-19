@@ -6,7 +6,7 @@ const NUMBER_Y = 2
 const INITIAL_NUMBER_X = 2
 const NUMBER_SPACING = -3
 const ITEMS = ["grass", "dirt", "sand", "gravel", "stone", "coal_ore", "iron_ore", "diamond_ore", "leaves", "log", "stripped_log", "plank", "crafting_table", "barrel", "post", "glass", "flint", "coal", "diamond", "apple", "sapling", "stone_sword", "iron_sword", "diamond_sword", "slab", "wool", "red_wool", "webs", "boom_beatle"]
-const TID_BITS = ["barrel", "funnel", "glass", "air", "tip", "handle", "shaft_l", "shaft", "lever_r", "lever_b", "lever_t", "air", "lever_l"]
+const TID_BITS = ["barrel", "funnel", "glass", "wheel", "tip", "handle", "shaft_l", "shaft", "trigger_r", "trigger_b", "trigger_t", "trigger_l", "antenna_1", "antenna_2", "computer", "air"]
 const TB_SPACING = 2
 const TB_IX = -2.5
 const TB_IY = -2.5
@@ -15,14 +15,12 @@ var row # -1 for mouse
 var index
 var count
 var item
-var blueprint
+var blueprint = [
+	[null, null, null, null],
+	[null, null, null, null],
+	[null, null, null, null],
+	[null, null, null, null]]
 var anchors
-var activations
-var items = [
-	[["air", 0], ["air", 0], ["air", 0], ["air", 0]], 
-	[["air", 0], ["air", 0], ["air", 0], ["air", 0]], 
-	[["air", 0], ["air", 0], ["air", 0], ["air", 0]], 
-	[["air", 0], ["air", 0], ["air", 0], ["air", 0]]]
 var touchingMouse = false
 
 @onready var tileMap = get_node("../../../TileMap")
@@ -43,7 +41,7 @@ func _ready():
 		position.x = index * get_parent().ITEM_X_SPACING + get_parent().INITIAL_X
 
 func _process(delta):
-		
+	
 	if get_parent().name == "TinkerBenchMenu":
 		_crafting_output()
 	
@@ -93,18 +91,19 @@ func _update_count():
 func _update_invention():
 	
 	if get_parent().name == "TinkerBenchMenu":
-		blueprint = get_parent().blueprint
-		anchors = get_parent().anchors
-		activations = []
+		blueprint = [
+			[null, null, null, null],
+			[null, null, null, null],
+			[null, null, null, null],
+			[null, null, null, null]]
 		
-		for row in get_parent().connectionsFrom:
+		for rowIndex in range(get_parent().grid.size()):
 			
-			for connection in row:
+			for itemIndex in range(get_parent().grid[rowIndex].size()):
 				
-				if connection != null:
-					
-					activations.append([get_parent().grid[connection.from[0]][connection.from[1]].action, connection.to, connection.from])
-	
+				if get_parent().grid[rowIndex][itemIndex] != null:
+					blueprint[rowIndex][itemIndex] = get_parent().grid[rowIndex][itemIndex].info
+		
 	for child in $TidBits.get_children():
 		child.queue_free()
 	
@@ -114,19 +113,26 @@ func _update_invention():
 			
 			if blueprint[tbRow][tbIndex] != null:
 				var tidBit = TID_BIT.instantiate()
-				var bit = blueprint[tbRow][tbIndex]
+				var bit = blueprint[tbRow][tbIndex]["bit"]
 				tidBit.position = Vector2(TB_IY + TB_SPACING * tbRow, TB_IX + TB_SPACING * tbIndex)
 				
-				if bit == "lever":
-					tidBit.frame = TID_BITS.find(bit + "_" + anchors[tbRow][tbIndex])
-				else:
-					tidBit.frame = TID_BITS.find(bit)
+				if bit == "trigger":
+					
+					if blueprint[tbRow][tbIndex]["anchor"] == null:
+						tidBit.frame = TID_BITS.find(bit + "_b")
+						
+					else:
+						tidBit.frame = TID_BITS.find(bit + "_" + blueprint[tbRow][tbIndex]["anchor"])
 				
-				if bit == "shaft":
+				elif bit == "shaft":
 					
 					if _relitive(blueprint, tbRow, -1)[tbIndex] != "shaft":
 						tidBit.frame = TID_BITS.find(bit + "_l")
 				
+				else:
+					tidBit.frame = TID_BITS.find(bit)
+				
+
 				$TidBits.add_child(tidBit)
 
 func _on_mouse_detecter_mouse_entered():
