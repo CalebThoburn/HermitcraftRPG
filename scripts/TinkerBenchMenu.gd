@@ -1,5 +1,6 @@
 extends Sprite2D
 
+const WHEEL_DIRECTION_SELECT = preload("res://scenes/direction_select.tscn")
 const ACTION_SELECT = preload("res://scenes/lever_action_select.tscn")
 const FUNNEL_SELECT = preload("res://scenes/funnel_direction_select.tscn")
 const WIRE = preload("res://scenes/wire.tscn")
@@ -9,7 +10,8 @@ const INITIAL_X = -9
 const INITIAL_Y = -13
 const SPACING = 9
 const OUTPUT_POS = Vector2(37, 14)
-const WIRE_OFFSET = {"tip": Vector2(-5, 1), "funnel": Vector2(0, -2), "b": Vector2(0, 6), "t": Vector2(0, -3), "l": Vector2(-5, 1), "r": Vector2(4, 1)}
+const WIRE_OFFSET = {"wheel": Vector2(0, 0), "antenna_1": Vector2(0, 6), "antenna_2": Vector2(0, 6), "tip": Vector2(-5, 1), "funnel": Vector2(0, -2), "b": Vector2(0, 6), "t": Vector2(0, -3), "l": Vector2(-5, 1), "r": Vector2(4, 1)}
+const WIRE_ENDS = ["tip", "funnel", "antenna_1", "antenna_2", "wheel"]
 
 var output
 var mouseInOutput = false
@@ -26,12 +28,7 @@ var grid = [
 	[null, null, null, null], 
 	[null, null, null, null], 
 	[null, null, null, null]]
-var connectionsFrom = [
-	[null, null, null, null], 
-	[null, null, null, null], 
-	[null, null, null, null], 
-	[null, null, null, null]]
-var connectionsTo = [
+var wiresByEnd = [
 	[null, null, null, null], 
 	[null, null, null, null], 
 	[null, null, null, null], 
@@ -59,7 +56,7 @@ func _process(delta):
 				
 				if wire == null:
 					
-					if grid[mouseGridPos.x][mouseGridPos.y].info["bit"] == "trigger" and grid[mouseGridPos.x][mouseGridPos.y].info["connectedTo"] == null:
+					if grid[mouseGridPos.x][mouseGridPos.y] != null and grid[mouseGridPos.x][mouseGridPos.y].info["bit"] == "trigger" and grid[mouseGridPos.x][mouseGridPos.y].info["connectedTo"] == null:
 						wire = WIRE.instantiate()
 						wire.position = Vector2(0, 0)
 						wire.origin = mouseGridPos * SPACING + Vector2(INITIAL_X, INITIAL_Y)
@@ -67,12 +64,29 @@ func _process(delta):
 						wire.position += WIRE_OFFSET[grid[mouseGridPos.x][mouseGridPos.y].info["anchor"]]
 						wire.from = mouseGridPos
 						add_child(wire)
-				
-				elif grid[mouseGridPos.x][mouseGridPos.y] != null and grid[mouseGridPos.x][mouseGridPos.y].info["bit"] != "trigger":
+					
+					elif grid[mouseGridPos.x][mouseGridPos.y] != null and grid[mouseGridPos.x][mouseGridPos.y].info["bit"].left(7) == "antenna" and grid[mouseGridPos.x][mouseGridPos.y].info["connectedTo"] == null:
+						wire = WIRE.instantiate()
+						wire.position = Vector2(0, 0)
+						wire.origin = mouseGridPos * SPACING + Vector2(INITIAL_X, INITIAL_Y)
+						wire.color = 0
+						wire.position += WIRE_OFFSET[grid[mouseGridPos.x][mouseGridPos.y].info["bit"]]
+						wire.from = mouseGridPos
+						add_child(wire)
+					
+				elif grid[mouseGridPos.x][mouseGridPos.y] != null and WIRE_ENDS.has(grid[mouseGridPos.x][mouseGridPos.y].info["bit"]):
 					grid[wire.from.x][wire.from.y].info["connectedTo"] = mouseGridPos
 					wire.to = mouseGridPos
 					wire.attached = true
-					wire.end = mouseGridPos * SPACING + WIRE_OFFSET[grid[mouseGridPos.x][mouseGridPos.y].info["bit"]] + Vector2(INITIAL_X, INITIAL_Y) - WIRE_OFFSET[grid[wire.from.x][wire.from.y].info["anchor"]]
+					wire.end = mouseGridPos * SPACING + WIRE_OFFSET[grid[mouseGridPos.x][mouseGridPos.y].info["bit"]] + Vector2(INITIAL_X, INITIAL_Y)
+					
+					if grid[wire.from.x][wire.from.y].info["bit"] == "trigger":
+						wire.end -= WIRE_OFFSET[grid[wire.from.x][wire.from.y].info["anchor"]]
+						
+					else:
+						WIRE_OFFSET[grid[wire.from.x][wire.from.y].info["bit"]]
+					
+					wiresByEnd[wire.to.x][wire.to.y] = wire
 					wire = null
 					output._update_invention()
 					
@@ -129,18 +143,26 @@ func _process(delta):
 						transferingItem.add_child(directionSelect)
 						selecting = true
 					
+					elif transferingItem.info["bit"] == "wheel" and transferingItem.info["direction"] == null:
+						var directionSelect = WHEEL_DIRECTION_SELECT.instantiate()
+						transferingItem.add_child(directionSelect)
+						selecting = true
+					
 				mouseItem = grid[mouseGridPos.x][mouseGridPos.y]
 				
 				if grid[mouseGridPos.x][mouseGridPos.y] != null:
 					mouseItem.row = -1
 					
 					if mouseItem.info["connectedTo"] != null:
-						connectionsTo[mouseGridPos.x][mouseGridPos.y].queue_free()
-						connectionsTo[mouseGridPos.x][mouseGridPos.y] = null
+						wiresByEnd[mouseItem.info["connectedTo"].x][mouseItem.info["connectedTo"].y].queue_free()
+						wiresByEnd[mouseItem.info["connectedTo"].x][mouseItem.info["connectedTo"].y] = null
+						mouseItem.info["connectedTo"] = null
 					
-					elif connectionsFrom[mouseGridPos.x][mouseGridPos.y] != null:
-						connectionsFrom[mouseGridPos.x][mouseGridPos.y].queue_free()
-						connectionsFrom[mouseGridPos.x][mouseGridPos.y] = null
+					elif wiresByEnd[mouseGridPos.x][mouseGridPos.y] != null:
+						var deadWire = wiresByEnd[mouseGridPos.x][mouseGridPos.y]
+						grid[deadWire.from.x][deadWire.from.y].info["connectedTo"] = null
+						deadWire.queue_free()
+						wiresByEnd[mouseGridPos.x][mouseGridPos.y] = null
 					
 					if mouseItem.info["bit"] == "trigger" and  mouseItem.info["action"] == 0:
 						mouseItem.get_node("LeverActionSelect").queue_free()
@@ -151,7 +173,7 @@ func _process(delta):
 				grid[mouseGridPos.x][mouseGridPos.y] = transferingItem
 				output._update_invention()
 			
-			if Input.is_action_just_pressed("click") and mouseInOutput and _check_valid(grid):
+			if Input.is_action_just_pressed("click") and mouseInOutput and _type(grid) != "invaild":
 				
 				for rowIndex in range(grid.size()):
 					
@@ -162,6 +184,7 @@ func _process(delta):
 				
 				get_node("../../Player/HotBar").mouseItem = output
 				output.reparent(get_node("../../Player/HotBar"))
+				output.item = _type(grid)
 				_reset_board()
 				_set_resources()
 			
@@ -185,11 +208,12 @@ func _process(delta):
 						
 						if resource.info["connectedTo"] != null:
 							var wire = WIRE.instantiate()
-							wire.position = Vector2(0, 0)
+							wire.position = Vector2(0, 0) + WIRE_OFFSET[resource.info["anchor"]]
 							wire.from = Vector2(row, index)
 							wire.to = resource.info["connectedTo"]
 							wire.end = wire.to * SPACING + WIRE_OFFSET[blueprint[wire.to.x][ wire.to.y]["bit"]] + Vector2(INITIAL_X, INITIAL_Y) - WIRE_OFFSET[resource.info["anchor"]]
 							wire.origin = wire.from * SPACING + Vector2(INITIAL_X, INITIAL_Y)
+							wire.attached = true
 							wire.color = 0
 							
 							if blueprint[wire.to.x][wire.to.y]["anchor"] == null:
@@ -221,16 +245,28 @@ func _process(delta):
 
 func _set_defaults(mouseItem):
 	
-	mouseItem.info.merge({"powered": false,"anchor": null, "connectedTo": null, "action": null, "item": "air", "count": 0})
+	mouseItem.info.merge({"powered": false,"anchor": null, "connectedTo": null, "action": null, "item": "air", "count": 0, "direction": null})
 	var bit = mouseItem.info["bit"]
 
-func _check_valid(blueprint):
+func _type(blueprint):
 	
 	if blueprint == [[null, null, null, null], [null, null, null, null], [null, null, null, null], [null, null, null, null]]:
-		return false
+		return "invalid"
 		
 	else:
-		return true
+		
+		var type = "mechanism"
+		
+		for row in grid:
+			
+			for bit in row:
+				
+				if bit != null:
+					
+					if bit.info["bit"] == "handle":
+						
+						type = "invention"
+		return type
 
 func _close():
 	get_node("../../Player").crafting = false
@@ -262,17 +298,12 @@ func _reset_board():
 		[null, null, null, null], 
 		[null, null, null, null], 
 		[null, null, null, null]]
-	connectionsFrom = [
+	wiresByEnd = [
 		[null, null, null, null], 
 		[null, null, null, null], 
 		[null, null, null, null], 
 		[null, null, null, null]]
-	connectionsTo = [
-		[null, null, null, null], 
-		[null, null, null, null], 
-		[null, null, null, null], 
-		[null, null, null, null]]
-	
+
 	for child in get_children():
 		
 		if !child.is_class("Area2D"):

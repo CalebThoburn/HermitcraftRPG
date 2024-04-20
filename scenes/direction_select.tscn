@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3 uid="uid://b1q23jpg5gl61"]
+
+[ext_resource type="Texture2D" uid="uid://cb8kx0stenv85" path="res://textures/crafting/WheelDirectionSelect.png" id="1_24qdq"]
+[ext_resource type="Script" path="res://scripts/DirectionSelect.gd" id="2_2fjwg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ut6bc"]
+size = Vector2(9, 9)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_f765w"]
+size = Vector2(9, 9)
+
+[node name="DirectionSelect" type="Sprite2D"]
+position = Vector2(0, -10)
+texture = ExtResource("1_24qdq")
+offset = Vector2(0.5, 0.5)
+script = ExtResource("2_2fjwg")
+
+[node name="Left" type="Area2D" parent="."]
+
+[node name="LeftCollision" type="CollisionShape2D" parent="Left"]
+position = Vector2(-4.5, 0.5)
+shape = SubResource("RectangleShape2D_ut6bc")
+
+[node name="Right" type="Area2D" parent="."]
+
+[node name="RightCollision" type="CollisionShape2D" parent="Right"]
+position = Vector2(5.5, 0.5)
+shape = SubResource("RectangleShape2D_f765w")
+
+[connection signal="mouse_entered" from="Left" to="." method="_on_left_mouse_entered"]
+[connection signal="mouse_exited" from="Left" to="." method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="Right" to="." method="_on_right_mouse_entered"]
+[connection signal="mouse_exited" from="Right" to="." method="_on_mouse_exited"]

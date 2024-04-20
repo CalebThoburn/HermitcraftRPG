@@ -28,7 +28,7 @@ var touchingMouse = false
 func _ready():
 	$ItemSprite.frame = ITEMS.find(item)
 	
-	if item == "invention":
+	if item == "invention" or item == "mechanism":
 		$ItemSprite.queue_free()
 		_update_invention()
 	
@@ -50,7 +50,7 @@ func _process(delta):
 
 func _inventory_stuff():
 	
-	if item != "invention":
+	if item != "invention" and item != "mechanism":
 		
 		if count == 0:
 			
@@ -67,7 +67,7 @@ func _inventory_stuff():
 		position.y = row * get_parent().ITEM_Y_SPACING + get_parent().INITIAL_Y
 		position.x = index * get_parent().ITEM_X_SPACING + get_parent().INITIAL_X
 		
-		if item != "invention":
+		if item != "invention" and item != "mechanism":
 			count = tileMap.inventory[row][index][1]
 
 func _crafting_output():

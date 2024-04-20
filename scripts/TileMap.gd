@@ -7,6 +7,7 @@ const BLOCK_FRAME = ["grass", "dirt", "sand", "gravel", "stone", "coal_ore", "ir
 const BLOCK_DROPS = {"wool": ["webs"], "thick_leaves": ["apple", "sapling", "sapling", "air", "air"], "save_block": ["diamond"], "grass": ["dirt"], "gravel": ["gravel", "gravel", "flint"], "coal_ore": ["coal"], "diamond_ore": ["diamond"], "leaves": [ "apple", "sapling", "sapling", "air", "air", "air", "air"], "glass": ["air"]}
 const SWORDS = ["stone_sword", "iron_sword", "diamond_sword"]
 const DROPPED_ITEM = preload("res://scenes/dropped_item.tscn")
+const MECHANISM = preload("res://scenes/mechanism.tscn")
 const BREAK_DURATION = [.5, .5, .5, .5, 1.5, 1.5, 2, 2.5, .4, .8, .8, .8, .8, .8, .8, .3, .4, .8, .6, .6, 86400]
 const LAYERS = 3
 const BLOCK_SPACING = 12.0
@@ -60,6 +61,15 @@ func _process(delta):
 					
 					if inventory[0][slot][1] == 0:
 						inventory[0][slot][0] = "air"
+						
+					
+				elif inventory[0][slot][0] == "mechanism":
+					var mechanism = MECHANISM.instantiate()
+					mechanism.position = $PlayerCursor.position
+					mechanism.blueprint = inventory[0][slot][2]
+					get_parent().add_child(mechanism)
+					inventory[0][slot] = ["air", 0]
+					get_node("../Player")._update_hotbar()
 		
 		if Input.is_action_just_pressed("click") or (Input.is_action_pressed("click") and Input.is_action_just_released("right_click")):
 			miningStart = Time.get_ticks_msec()

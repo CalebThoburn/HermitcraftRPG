@@ -36,7 +36,7 @@ func _physics_process(delta):
 			
 			if mouseItem == null and inventory[row][index] != null:
 				
-				if inventory[row][index].item != "invention":
+				if inventory[row][index].item != "invention" and inventory[row][index].item != "mechanism":
 					var newItem = ITEM.instantiate()
 					newItem.item = inventory[row][index].item
 					newItem.count = floor(inventory[row][index].count / 2)
@@ -53,7 +53,7 @@ func _physics_process(delta):
 				
 			elif inventory[row][index] == null:
 				
-				if mouseItem.item != "invention":
+				if mouseItem.item != "invention" and mouseItem.item != "mechanism":
 					mouseItem.count -= 1
 					mouseItem._update_count()
 					
@@ -70,7 +70,7 @@ func _physics_process(delta):
 						mouseItem.queue_free()
 						mouseItem = null
 				
-			elif mouseItem.item != "invention":
+			elif mouseItem.item != "invention" and mouseItem.item != "mechanism":
 				
 				if mouseItem.item == inventory[row][index].item and inventory[row][index].count < 64:
 					mouseItem.count -= 1
@@ -94,7 +94,7 @@ func _physics_process(delta):
 					if mouseItem != null:
 						get_node("../").inventory[row][index] = [mouseItem.item, mouseItem.count]
 						
-						if mouseItem.item == "invention":
+						if mouseItem.item == "invention" or mouseItem.item == "mechanism":
 							get_node("../").inventory[row][index].append(mouseItem.blueprint)
 						
 						inventory[row][index] = mouseItem
@@ -109,7 +109,7 @@ func _physics_process(delta):
 					
 					if mouseItem != null:
 						
-						if transitioningItem.item == mouseItem.item and mouseItem.item != "invention":
+						if transitioningItem.item == mouseItem.item and mouseItem.item != "invention" and mouseItem.item != "mechanism":
 							var total = transitioningItem.count + mouseItem.count
 							
 							if total <  64:
@@ -126,7 +126,7 @@ func _physics_process(delta):
 							
 						get_node("../").inventory[row][index] = [mouseItem.item, mouseItem.count]
 						
-						if mouseItem.item == "invention":
+						if mouseItem.item == "invention" or mouseItem.item == "mechanism":
 							get_node("../").inventory[row][index].append(mouseItem.blueprint)
 						
 						mouseItem.row = row
@@ -138,7 +138,7 @@ func _physics_process(delta):
 					if transitioningItem != null:
 						mouseItem.row = -1
 			
-			elif mouseItem != null and mouseItem.item != "invention":
+			elif mouseItem != null and mouseItem.item != "invention" and mouseItem.item != "mechanism":
 				get_node("../../TileMap")._drop(mouseItem.item, mouseItem.count, get_global_mouse_position())
 				mouseItem.queue_free()
 				mouseItem = null

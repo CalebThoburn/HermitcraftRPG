@@ -1,8 +1,8 @@
 extends CharacterBody2D
 
+const CREATURE = "Player"
 const DAMAGE_COOLDOWN = .25
 const DECEL_PER_DAMAGE = 20000.0
-const CREATURE = "Player"
 const HOTBAR_CHILDREN = ["HFBars", "SelectedSlot", "MouseDetecter", "InventorySprite"]
 const COLLECTED_ITEM = preload("res://scenes/collected_item.tscn")
 const ARM_FRAME_OFFSETS = [Vector2(-2, 1), Vector2(-1, 1), Vector2(.5, 2), Vector2(1.5, 1.5), Vector2(3, .5)]
@@ -15,6 +15,7 @@ const DECELERATION = 300.0
 const HOTBAR_SLOTS = 4
 const SWORDS = ["stone_sword", "iron_sword", "diamond_sword"]
 
+var antennaInRange = []
 var effects = {"slowness": 0}
 var speedFactor = 1
 var lastPos = Vector2(0, 0)
@@ -69,7 +70,7 @@ func _update_hotbar():
 				item.row = row
 				item.item = inventory[row][index][0]
 				
-				if item.item == "invention":
+				if item.item == "invention" or item.item == "mechanism":
 					item.blueprint = inventory[row][index][2]
 				
 				$HotBar.inventory[row][index] = item

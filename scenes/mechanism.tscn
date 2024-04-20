@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://bf4jelstj56g8"]
+
+[ext_resource type="Script" path="res://scripts/Mechanism.gd" id="1_rbays"]
+[ext_resource type="AudioStream" uid="uid://c7p4ilxfg7bci" path="res://audio/Woosh.mp3" id="2_imh2s"]
+
+[node name="Mechanism" type="CharacterBody2D"]
+position = Vector2(-205, -3)
+script = ExtResource("1_rbays")
+
+[node name="Woosh" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("2_imh2s")
+volume_db = 4.0
