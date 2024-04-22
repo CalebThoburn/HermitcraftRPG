@@ -276,7 +276,7 @@ animations = [{
 size = Vector2(14, 14)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y2gva"]
-size = Vector2(36, 36)
+size = Vector2(35, 35)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_726ri"]
 size = Vector2(27, 36)
@@ -851,7 +851,7 @@ script = ExtResource("14_nb4lf")
 position = Vector2(5, 0)
 
 [node name="MouseDetectorArea" type="CollisionShape2D" parent="TileMap/TinkerBenchMenu/MouseDetectorGrid"]
-position = Vector2(-1, 1)
+position = Vector2(-0.5, 0.5)
 shape = SubResource("RectangleShape2D_y2gva")
 
 [node name="MouseDetectorResources" type="Area2D" parent="TileMap/TinkerBenchMenu"]

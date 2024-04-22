@@ -10,7 +10,7 @@ const INITIAL_X = -9
 const INITIAL_Y = -13
 const SPACING = 9
 const OUTPUT_POS = Vector2(37, 14)
-const WIRE_OFFSET = {"wheel": Vector2(0, 0), "antenna_1": Vector2(0, 6), "antenna_2": Vector2(0, 6), "tip": Vector2(-5, 1), "funnel": Vector2(0, -2), "b": Vector2(0, 6), "t": Vector2(0, -3), "l": Vector2(-5, 1), "r": Vector2(4, 1)}
+const WIRE_OFFSET = {"computer_in": Vector2(-4, 3), "computer_out": Vector2(3, 3), "wheel": Vector2(0, 1), "antenna_1": Vector2(-1, 6), "antenna_2": Vector2(-1, 6), "tip": Vector2(-5, 1), "funnel": Vector2(1, -2), "b": Vector2(0, 6), "t": Vector2(0, -3), "l": Vector2(-5, 1), "r": Vector2(4, 1)}
 const WIRE_ENDS = ["tip", "funnel", "antenna_1", "antenna_2", "wheel"]
 
 var output
@@ -29,10 +29,10 @@ var grid = [
 	[null, null, null, null], 
 	[null, null, null, null]]
 var wiresByEnd = [
-	[null, null, null, null], 
-	[null, null, null, null], 
-	[null, null, null, null], 
-	[null, null, null, null]]
+	[{"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}], 
+	[{"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}],
+	[{"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}],
+	[{"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}]]
 var unlockedItems = ["wheel", "tip", "computer_flip", "antenna_1", "handle", "funnel", "computer_xor", "antenna_2", "trigger", "barrel", "computer_and"]
 var wire = null
 var mouseIn = false
@@ -47,6 +47,13 @@ func _process(delta):
 		mouseIn = false
 	
 	var mouseGridPos = round((get_local_mouse_position() - Vector2(INITIAL_X, INITIAL_Y)) / SPACING)
+	var topOrBottom = floor((get_local_mouse_position() - Vector2(INITIAL_X, INITIAL_Y)) / SPACING).y - mouseGridPos.y
+	
+	if topOrBottom < 0:
+		topOrBottom = "bottom"
+		
+	else:
+		topOrBottom = "top"
 	
 	if !selecting:
 		
@@ -58,43 +65,105 @@ func _process(delta):
 					
 					if grid[mouseGridPos.x][mouseGridPos.y] != null and grid[mouseGridPos.x][mouseGridPos.y].info["bit"] == "trigger" and grid[mouseGridPos.x][mouseGridPos.y].info["connectedTo"] == null:
 						wire = WIRE.instantiate()
-						wire.position = Vector2(0, 0)
+						wire.position = WIRE_OFFSET[grid[mouseGridPos.x][mouseGridPos.y].info["anchor"]]
 						wire.origin = mouseGridPos * SPACING + Vector2(INITIAL_X, INITIAL_Y)
 						wire.color = 0
-						wire.position += WIRE_OFFSET[grid[mouseGridPos.x][mouseGridPos.y].info["anchor"]]
-						wire.from = mouseGridPos
+						wire.from = {"coords": mouseGridPos, "topOrBottom": "both"}
 						add_child(wire)
 					
 					elif grid[mouseGridPos.x][mouseGridPos.y] != null and grid[mouseGridPos.x][mouseGridPos.y].info["bit"].left(7) == "antenna" and grid[mouseGridPos.x][mouseGridPos.y].info["connectedTo"] == null:
 						wire = WIRE.instantiate()
-						wire.position = Vector2(0, 0)
-						wire.origin = mouseGridPos * SPACING + Vector2(INITIAL_X, INITIAL_Y)
+						wire.position = WIRE_OFFSET[grid[mouseGridPos.x][mouseGridPos.y].info["bit"]]
 						wire.color = 0
-						wire.position += WIRE_OFFSET[grid[mouseGridPos.x][mouseGridPos.y].info["bit"]]
-						wire.from = mouseGridPos
+						wire.origin = mouseGridPos * SPACING + Vector2(INITIAL_X, INITIAL_Y)
+						wire.from = {"coords": mouseGridPos, "topOrBottom": "both"}
 						add_child(wire)
 					
-				elif grid[mouseGridPos.x][mouseGridPos.y] != null and WIRE_ENDS.has(grid[mouseGridPos.x][mouseGridPos.y].info["bit"]):
-					grid[wire.from.x][wire.from.y].info["connectedTo"] = mouseGridPos
-					wire.to = mouseGridPos
+					elif grid[mouseGridPos.x][mouseGridPos.y] != null and grid[mouseGridPos.x][mouseGridPos.y].info["bit"].left(8) == "computer" and grid[mouseGridPos.x][mouseGridPos.y].info["connectedTo"][topOrBottom] == null:
+						wire = WIRE.instantiate()
+						wire.position = WIRE_OFFSET["computer_out"]
+						wire.origin = mouseGridPos * SPACING + Vector2(INITIAL_X, INITIAL_Y)
+						wire.color = 0
+						
+						if topOrBottom == "bottom":
+							wire.position.y -= 3
+						
+						wire.from = {"coords": mouseGridPos, "topOrBottom": topOrBottom}
+						add_child(wire)
+					
+				elif wiresByEnd[mouseGridPos.x][mouseGridPos.y]["top"] == null and grid[mouseGridPos.x][mouseGridPos.y] != null and WIRE_ENDS.has(grid[mouseGridPos.x][mouseGridPos.y].info["bit"]):
+					
+					if grid[mouseGridPos.x][mouseGridPos.y].info["bit"].left(8) != "computer":
+						topOrBottom = "both"
+					
+					if grid[wire.from["coords"].x][wire.from["coords"].y].info["bit"].left(8) == "computer":
+						grid[wire.from["coords"].x][wire.from["coords"].y].info["connectedTo"][wire.from["topOrBottom"]] = {"coords": mouseGridPos, "topOrBottom": topOrBottom}
+						wire.to = grid[wire.from["coords"].x][wire.from["coords"].y].info["connectedTo"][wire.from["topOrBottom"]]
+						wiresByEnd[wire.to["coords"].x][wire.to["coords"].y][topOrBottom] = wire
+						
+						
+					else:
+						grid[wire.from["coords"].x][wire.from["coords"].y].info["connectedTo"] = {"coords": mouseGridPos, "topOrBottom": "both"}
+						wire.to = grid[wire.from["coords"].x][wire.from["coords"].y].info["connectedTo"]
+						wiresByEnd[wire.to["coords"].x][wire.to["coords"].y]["top"] = wire
+						wiresByEnd[wire.to["coords"].x][wire.to["coords"].y]["bottom"] = wire
+					
 					wire.attached = true
 					wire.end = mouseGridPos * SPACING + WIRE_OFFSET[grid[mouseGridPos.x][mouseGridPos.y].info["bit"]] + Vector2(INITIAL_X, INITIAL_Y)
 					
-					if grid[wire.from.x][wire.from.y].info["bit"] == "trigger":
-						wire.end -= WIRE_OFFSET[grid[wire.from.x][wire.from.y].info["anchor"]]
+					if grid[wire.from["coords"].x][wire.from["coords"].y].info["bit"] == "trigger":
+						wire.end -= WIRE_OFFSET[grid[wire.from["coords"].x][wire.from["coords"].y].info["anchor"]]
+						
+					elif grid[wire.from["coords"].x][wire.from["coords"].y].info["bit"].left(8) == "computer":
+						wire.end -= WIRE_OFFSET["computer_out"]
+						
+						if wire.from["topOrBottom"] == "bottom":
+							wire.end.y += 3
 						
 					else:
-						WIRE_OFFSET[grid[wire.from.x][wire.from.y].info["bit"]]
+						wire.end -= WIRE_OFFSET[grid[wire.from["coords"].x][wire.from["coords"].y].info["bit"]]
 					
-					wiresByEnd[wire.to.x][wire.to.y] = wire
 					wire = null
 					output._update_invention()
 					
+				elif grid[mouseGridPos.x][mouseGridPos.y] != null and grid[mouseGridPos.x][mouseGridPos.y].info["bit"].left(8) == "computer" and wiresByEnd[mouseGridPos.x][mouseGridPos.y][topOrBottom] == null:
+					
+					if wire.from["topOrBottom"] == "both":
+						grid[wire.from["coords"].x][wire.from["coords"].y].info["connectedTo"] = {"coords": mouseGridPos, "topOrBottom": topOrBottom}
+						
+					else:
+						grid[wire.from["coords"].x][wire.from["coords"].y].info["connectedTo"][wire.from["topOrBottom"]] = {"coords": mouseGridPos, "topOrBottom": topOrBottom}
+					
+					wire.to = {"coords": mouseGridPos, "topOrBottom": topOrBottom}
+					wire.attached = true
+					
+					if topOrBottom == "top":
+						wire.end = mouseGridPos * SPACING + WIRE_OFFSET["computer_in"] + Vector2(INITIAL_X, INITIAL_Y)
+					
+					else:
+						wire.end = mouseGridPos * SPACING + WIRE_OFFSET["computer_in"] + Vector2(INITIAL_X, INITIAL_Y - 3)
+					
+					if grid[wire.from["coords"].x][wire.from["coords"].y].info["bit"] == "trigger":
+						wire.end -= WIRE_OFFSET[grid[wire.from["coords"].x][wire.from["coords"].y].info["anchor"]]
+						
+					elif grid[wire.from["coords"].x][wire.from["coords"].y].info["bit"].left(8) == "computer":
+						wire.end -= WIRE_OFFSET["computer_out"]
+						
+						if wire.from["topOrBottom"] == "bottom":
+							wire.end.y += 3
+						
+					else:
+						wire.end -= WIRE_OFFSET[grid[wire.from["coords"].x][wire.from["coords"].y].info["bit"]]
+					
+					wiresByEnd[wire.to["coords"].x][wire.to["coords"].y][wire.to["topOrBottom"]] = wire
+					wire = null
+					output._update_invention()
+				
 				else:
 					wire.queue_free()
 					wire = null
 			
-			if Input.is_action_just_pressed("click") and mouseInResources:
+			if Input.is_action_just_pressed("click") and mouseInResources and wire == null:
 				
 				if mouseItem != null:
 					mouseItem.queue_free()
@@ -107,7 +176,7 @@ func _process(delta):
 					_set_defaults(mouseItem)
 					add_child(mouseItem)
 			
-			if Input.is_action_just_pressed("click") and mouseInGrid:
+			if Input.is_action_just_pressed("click") and mouseInGrid and wire == null:
 				var transferingItem = mouseItem
 				
 				if mouseItem != null:
@@ -153,17 +222,87 @@ func _process(delta):
 				if grid[mouseGridPos.x][mouseGridPos.y] != null:
 					mouseItem.row = -1
 					
-					if mouseItem.info["connectedTo"] != null:
-						wiresByEnd[mouseItem.info["connectedTo"].x][mouseItem.info["connectedTo"].y].queue_free()
-						wiresByEnd[mouseItem.info["connectedTo"].x][mouseItem.info["connectedTo"].y] = null
-						mouseItem.info["connectedTo"] = null
+					if mouseItem.info["connectedTo"] != null and mouseItem.info["connectedTo"] != {"top": null, "bottom": null}:
+						
+						if mouseItem.info["bit"].left(8) == "computer":
+							
+							if mouseItem.info["connectedTo"]["top"] != null:
+								
+								if mouseItem.info["connectedTo"]["top"]["topOrBottom"] == "both":
+									wiresByEnd[mouseItem.info["connectedTo"]["top"]["coords"].x][mouseItem.info["connectedTo"]["top"]["coords"].y]["both"].queue_free()
+									wiresByEnd[mouseItem.info["connectedTo"]["top"]["coords"].x][mouseItem.info["connectedTo"]["top"]["coords"].y] = {"top": null, "bottom": null, "both": null}
+								
+								else:
+									wiresByEnd[mouseItem.info["connectedTo"]["top"]["coords"].x][mouseItem.info["connectedTo"]["top"]["coords"].y][mouseItem.info["connectedTo"]["top"]["topOrBottom"]].queue_free()
+									wiresByEnd[mouseItem.info["connectedTo"]["top"]["coords"].x][mouseItem.info["connectedTo"]["top"]["coords"].y][mouseItem.info["connectedTo"]["top"]["topOrBottom"]] = null
+							
+							if mouseItem.info["connectedTo"]["bottom"] != null:
+								
+								if mouseItem.info["connectedTo"]["bottom"]["topOrBottom"] == "both":
+									wiresByEnd[mouseItem.info["connectedTo"]["bottom"]["coords"].x][mouseItem.info["connectedTo"]["bottom"]["coords"].y]["both"].queue_free()
+									wiresByEnd[mouseItem.info["connectedTo"]["bottom"]["coords"].x][mouseItem.info["connectedTo"]["bottom"]["coords"].y] = {"top": null, "bottom": null, "both": null}
+								
+								else:
+									wiresByEnd[mouseItem.info["connectedTo"]["bottom"]["coords"].x][mouseItem.info["connectedTo"]["bottom"]["coords"].y][mouseItem.info["connectedTo"]["bottom"]["topOrBottom"]].queue_free()
+									wiresByEnd[mouseItem.info["connectedTo"]["bottom"]["coords"].x][mouseItem.info["connectedTo"]["bottom"]["coords"].y][mouseItem.info["connectedTo"]["bottom"]["topOrBottom"]] = null
+							
+							mouseItem.info["connectedTo"] = {"top": null, "bottom": null}
+							
+						else:
+							
+							if mouseItem.info["connectedTo"]["topOrBottom"] == "both":
+								wiresByEnd[mouseItem.info["connectedTo"]["coords"].x][mouseItem.info["connectedTo"]["coords"].y]["top"].queue_free()
+								wiresByEnd[mouseItem.info["connectedTo"]["coords"].x][mouseItem.info["connectedTo"]["coords"].y] = {"top": null, "bottom": null, "both": null}
+							
+							else:
+								wiresByEnd[mouseItem.info["connectedTo"]["coords"].x][mouseItem.info["connectedTo"]["coords"].y][mouseItem.info["connectedTo"]["topOrBottom"]].queue_free()
+								wiresByEnd[mouseItem.info["connectedTo"]["coords"].x][mouseItem.info["connectedTo"]["coords"].y][mouseItem.info["connectedTo"]["topOrBottom"]] = null
+							
+							mouseItem.info["connectedTo"] = null
 					
-					elif wiresByEnd[mouseGridPos.x][mouseGridPos.y] != null:
-						var deadWire = wiresByEnd[mouseGridPos.x][mouseGridPos.y]
-						grid[deadWire.from.x][deadWire.from.y].info["connectedTo"] = null
-						deadWire.queue_free()
-						wiresByEnd[mouseGridPos.x][mouseGridPos.y] = null
-					
+					if wiresByEnd[mouseGridPos.x][mouseGridPos.y] != {"top": null, "bottom": null, "both": null}:
+						
+						if wiresByEnd[mouseGridPos.x][mouseGridPos.y]["top"] == null and wiresByEnd[mouseGridPos.x][mouseGridPos.y]["bottom"] == null:
+							var deadWire = wiresByEnd[mouseGridPos.x][mouseGridPos.y]["both"]
+							
+							if deadWire.from["topOrBottom"] == "both":
+								wiresByEnd[mouseGridPos.x][mouseGridPos.y]["both"] = null
+								grid[deadWire.from["coords"].x][deadWire.from["coords"].y].info["connectedTo"] = null
+								
+							else:
+								grid[deadWire.from["coords"].x][deadWire.from["coords"].y].info["connectedTo"][deadWire.from["topOrBottom"]] = null
+								wiresByEnd[mouseGridPos.x][mouseGridPos.y]["both"] = null
+								
+							deadWire.queue_free()
+						
+						else:
+						
+							if wiresByEnd[mouseGridPos.x][mouseGridPos.y]["top"] != null:
+								var deadWire = wiresByEnd[mouseGridPos.x][mouseGridPos.y]["top"]
+								
+								if deadWire.from["topOrBottom"] == "both":
+									wiresByEnd[mouseGridPos.x][mouseGridPos.y]["top"] = null
+									grid[deadWire.from["coords"].x][deadWire.from["coords"].y].info["connectedTo"] = null
+									
+								else:
+									grid[deadWire.from["coords"].x][deadWire.from["coords"].y].info["connectedTo"][deadWire.from["topOrBottom"]] = null
+									wiresByEnd[mouseGridPos.x][mouseGridPos.y]["top"] = null
+									
+								deadWire.queue_free()
+							
+							if wiresByEnd[mouseGridPos.x][mouseGridPos.y]["bottom"] != null:
+								var deadWire = wiresByEnd[mouseGridPos.x][mouseGridPos.y]["bottom"]
+								
+								if deadWire.from["topOrBottom"] == "both":
+									wiresByEnd[mouseGridPos.x][mouseGridPos.y]["bottom"] = null
+									grid[deadWire.from["coords"].x][deadWire.from["coords"].y].info["connectedTo"] = null
+									
+								else:
+									grid[deadWire.from["coords"].x][deadWire.from["coords"].y].info["connectedTo"]["bottom"] = null
+									wiresByEnd[mouseGridPos.x][mouseGridPos.y]["bottom"] = null
+									
+								deadWire.queue_free()
+							
 					if mouseItem.info["bit"] == "trigger" and  mouseItem.info["action"] == 0:
 						mouseItem.get_node("LeverActionSelect").queue_free()
 					
@@ -173,7 +312,7 @@ func _process(delta):
 				grid[mouseGridPos.x][mouseGridPos.y] = transferingItem
 				output._update_invention()
 			
-			if Input.is_action_just_pressed("click") and mouseInOutput and _type(grid) != "invaild":
+			if Input.is_action_just_pressed("click") and mouseInOutput and _type(grid) != "invaild" and wire == null:
 				
 				for rowIndex in range(grid.size()):
 					
@@ -188,7 +327,7 @@ func _process(delta):
 				_reset_board()
 				_set_resources()
 			
-		elif mouseInGrid and Input.is_action_just_pressed("click") and get_node("../../Player/HotBar").mouseItem.item == "invention":
+		elif wire == null and mouseInGrid and Input.is_action_just_pressed("click") and get_node("../../Player/HotBar").mouseItem.item == "invention":
 			
 			_reset_board()
 			_set_resources()
@@ -211,16 +350,16 @@ func _process(delta):
 							wire.position = Vector2(0, 0) + WIRE_OFFSET[resource.info["anchor"]]
 							wire.from = Vector2(row, index)
 							wire.to = resource.info["connectedTo"]
-							wire.end = wire.to * SPACING + WIRE_OFFSET[blueprint[wire.to.x][ wire.to.y]["bit"]] + Vector2(INITIAL_X, INITIAL_Y) - WIRE_OFFSET[resource.info["anchor"]]
+							wire.end = wire.to["coords"] * SPACING + WIRE_OFFSET[blueprint[wire.to["coords"].x][ wire.to["coords"].y]["bit"]] + Vector2(INITIAL_X, INITIAL_Y) - WIRE_OFFSET[resource.info["anchor"]]
 							wire.origin = wire.from * SPACING + Vector2(INITIAL_X, INITIAL_Y)
 							wire.attached = true
 							wire.color = 0
 							
-							if blueprint[wire.to.x][wire.to.y]["anchor"] == null:
-								wire.position += WIRE_OFFSET[blueprint[wire.to.x][wire.to.y]["bit"]]
+							if blueprint[wire.to["coords"].x][wire.to["coords"].y]["anchor"] == null:
+								wire.position += WIRE_OFFSET[blueprint[wire.to["coords"].x][wire.to["coords"].y]["bit"]]
 								
 							else:
-								wire.position += WIRE_OFFSET[blueprint[wire.to.x][wire.to.y]["anchor"]]
+								wire.position += WIRE_OFFSET[blueprint[wire.to["coords"].x][wire.to["coords"].y]["anchor"]]
 							wire.attached = true
 							add_child(wire)
 						
@@ -230,7 +369,7 @@ func _process(delta):
 			get_node("../../Player/HotBar").mouseItem = null
 			output._update_invention()
 						
-		elif mouseInGrid and Input.is_action_just_pressed("click") and grid[mouseGridPos.x][mouseGridPos.y] != null and grid[mouseGridPos.x][mouseGridPos.y].info["bit"] == "barrel":
+		elif wire == null and mouseInGrid and Input.is_action_just_pressed("click") and grid[mouseGridPos.x][mouseGridPos.y] != null and grid[mouseGridPos.x][mouseGridPos.y].info["bit"] == "barrel":
 			
 			var info = grid[mouseGridPos.x][mouseGridPos.y].info.duplicate(true)
 			
@@ -245,7 +384,12 @@ func _process(delta):
 
 func _set_defaults(mouseItem):
 	
-	mouseItem.info.merge({"powered": false,"anchor": null, "connectedTo": null, "action": null, "item": "air", "count": 0, "direction": null})
+	mouseItem.info.merge({"powered": {"both": false},"anchor": null, "connectedTo": null, "action": null, "item": "air", "count": 0, "direction": null, "flop": false})
+	
+	if mouseItem.info["bit"].left(8) == "computer":
+		mouseItem.info["connectedTo"] = {"top": null, "bottom": null}
+		mouseItem.info["powered"] = {"top": false, "bottom": false}
+	
 	var bit = mouseItem.info["bit"]
 
 func _type(blueprint):
@@ -299,11 +443,11 @@ func _reset_board():
 		[null, null, null, null], 
 		[null, null, null, null]]
 	wiresByEnd = [
-		[null, null, null, null], 
-		[null, null, null, null], 
-		[null, null, null, null], 
-		[null, null, null, null]]
-
+		[{"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}], 
+		[{"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}],
+		[{"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}],
+		[{"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}, {"top": null, "bottom": null, "both": null}]]
+	
 	for child in get_children():
 		
 		if !child.is_class("Area2D"):

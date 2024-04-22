@@ -8,6 +8,7 @@ const TB = preload("res://scenes/large_tid_bit.tscn")
 const COLLISION = preload("res://scenes/mechanism_collision.tscn")
 const MAX_STACK = {"barrel": 64, "funnel": 8, "tip": 1}
 const TB_TO_FRAME = ["barrel", "funnel", "glass_sole", "glass_top", "glass_center", "glass_bottom", "tip", "handle", "shaft_sole", "shaft_left", "shaft_center", "shaft_right", "computer", "wheel", "trigger_l", "trigger_t", "trigger_r", "trigger_b", "antenna_1", "antenna_2"]
+const TB_W_COLISION = ["barrel", "tip", "computer", "wheel", "computer"]
 const TB_INIT = Vector2(8, -2.5)
 const TB_SPACING = 3
 const TIME_BETWEEN_TICKS = .05
@@ -16,6 +17,8 @@ const ACCELERATION = 600.0
 const GRAVITY = 300.0
 const DECELERATION = 300.0
 
+var collisionPoints = 0
+var collisionPointsTouchingCursor = 0
 var pressed = [false, false, false]
 var antenna = [false, false]
 var timeSinceTick = 0
@@ -35,14 +38,8 @@ func _ready():
 
 func _physics_process(delta):
 	
-	if Input.is_action_pressed("trigger_action1") and playerInRange:
-		pressed[0] = true
-		
-	if Input.is_action_pressed("trigger_action2") and playerInRange:
-		pressed[1] = true
-		
-	if Input.is_action_pressed("trigger_action3") and playerInRange:
-		pressed[2] = true
+	if Input.is_action_pressed("click") and collisionPointsTouchingCursor > floor(collisionPoints / 2):
+		queue_free()
 	
 	timeSinceTick += delta
 	
@@ -73,9 +70,12 @@ func _build():
 			
 			if blueprint[row][index] != null:
 				var tidBit = TB.instantiate()
-				var collision = COLLISION.instantiate()
-				collision.position = Vector2(row, index) * TB_SPACING + TB_INIT
-				add_child(collision)
+				
+				if TB_W_COLISION.has(blueprint[row][index]["bit"]):
+					collisionPoints += 1
+					var collision = COLLISION.instantiate()
+					collision.position = Vector2(row, index) * TB_SPACING + TB_INIT
+					add_child(collision)
 				
 				if blueprint[row][index]["bit"] == "shaft":
 					
@@ -96,19 +96,23 @@ func _build():
 					tidBit.frame = TB_TO_FRAME.find("trigger_" + blueprint[row][index]["anchor"])
 					
 				elif blueprint[row][index]["bit"].left(8) == "computer":
+					collisionPoints += 1
+					var collision = COLLISION.instantiate()
+					collision.position = Vector2(row, index) * TB_SPACING + TB_INIT
+					add_child(collision)
 					blueprint[row][index]["powered_1"] = false
 					blueprint[row][index]["powered_2"] = false
 					tidBit.frame = TB_TO_FRAME.find("computer")
 					
 				elif blueprint[row][index]["bit"].left(7) == "antenna":
-					tidBit.frame = TB_TO_FRAME.find(blueprint[row][index])
+					tidBit.frame = TB_TO_FRAME.find(blueprint[row][index]["bit"])
 					var antennaSensor = ANTENNA_SENSOR.instantiate()
 					antennaSensor.position = Vector2(row, index) * TB_SPACING
 					antennaSensor.info = {"type": int(blueprint[row][index]["bit"].right(1)), "position": Vector2(row, index)}
 					add_child(antennaSensor)
 					
 				else:
-					tidBit.frame = TB_TO_FRAME.find(blueprint[row][index])
+					tidBit.frame = TB_TO_FRAME.find(blueprint[row][index]["bit"])
 				
 				tidBit.position = TB_INIT + Vector2(row , index) * TB_SPACING
 				add_child(tidBit)
@@ -127,56 +131,90 @@ func _tick():
 				
 				match bit["bit"]:
 					
+					
 					"wheel":
 						
-						if bit["powered"]:
+						if bit["powered"]["both"]:
 							
 							if abs(velocity.x) < MAX_SPEED:
 								velocity.x += ACCELERATION * bit["direction"] * TIME_BETWEEN_TICKS
 							
-							bit["powered"] = false
-					
+							bit["powered"]["both"] = false
+							
+					"computer_xor":
+						
+						if (bit["powered"]["top"] or bit["powered"]["bottom"]) and !(bit["powered"]["top"] and bit["powered"]["bottom"]):
+							if bit["connectedTo"]["top"] != null:
+								newBlueprint[bit["connectedTo"]["top"]["coords"].x][bit["connectedTo"]["top"]["coords"].y]["powered"][bit["connectedTo"]["top"]["topOrBottom"]] = true
+							
+							if bit["connectedTo"]["bottom"] != null:
+								newBlueprint[bit["connectedTo"]["bottom"]["coords"].x][bit["connectedTo"]["bottom"]["coords"].y]["powered"][bit["connectedTo"]["bottom"]["topOrBottom"]] = true
+						
+						newBlueprint[rowIndex][bitIndex]["powered"]["top"] = false
+						newBlueprint[rowIndex][bitIndex]["powered"]["bottom"] = false
+						
+					"computer_and":
+						
+						if bit["powered"]["top"] and bit["powered"]["bottom"]:
+							
+							if bit["connectedTo"]["top"] != null:
+								
+								newBlueprint[bit["connectedTo"]["top"]["coords"].x][bit["connectedTo"]["top"]["coords"].y]["powered"][bit["connectedTo"]["top"]["topOrBottom"]] = true
+							
+							if bit["connectedTo"]["bottom"] != null:
+								
+								newBlueprint[bit["connectedTo"]["bottom"]["coords"].x][bit["connectedTo"]["bottom"]["coords"].y]["powered"][bit["connectedTo"]["bottom"]["topOrBottom"]] = true
+						
+						newBlueprint[rowIndex][bitIndex]["powered"]["top"] = false
+						newBlueprint[rowIndex][bitIndex]["powered"]["bottom"] = false
+						
+					"computer_flip":
+						
+						if bit["powered"]["top"] or bit["powered"]["bottom"]:
+							bit["flop"] = !bit["flop"]
+						
+						if bit["flop"]:
+							if bit["connectedTo"]["top"] != null:
+								newBlueprint[bit["connectedTo"]["top"]["coords"].x][bit["connectedTo"]["top"]["coords"].y]["powered"][bit["connectedTo"]["top"]["topOrBottom"]] = true
+							
+							if bit["connectedTo"]["bottom"] != null:
+								newBlueprint[bit["connectedTo"]["bottom"]["coords"].x][bit["connectedTo"]["bottom"]["coords"].y]["powered"][bit["connectedTo"]["bottom"]["topOrBottom"]] = true
+						
+						newBlueprint[rowIndex][bitIndex]["powered"]["top"] = false
+						newBlueprint[rowIndex][bitIndex]["powered"]["bottom"] = false
+						
+					"antenna_1":
+						
+						if bit["powered"]["both"]:
+							
+							for antenna in get_node("../../../").antennaInRange:
+								
+								if antenna.info["type"] == 1:
+									antenna._power()
+							
+							newBlueprint[rowIndex][bitIndex]["powered"]["both"] = false
+							
+					"antenna_2":
+						
+						if bit["powered"]["both"]:
+							
+							for antenna in get_node("../../../").antennaInRange:
+								
+								if antenna.info["type"] == 2:
+									antenna._power()
+							
+							newBlueprint[rowIndex][bitIndex]["powered"]["both"] = false
+							
 					"trigger":
 						
 						if pressed[bit["action"] - 1]:
-							
-							if typeof(bit["connectedTo"]) == 28:
-								newBlueprint[bit["connectedTo"][0].x][bit["connectedTo"][0].y]["powerSockets"][bit["connectedTo"][1]] = true
-								
-							else:
-								newBlueprint[bit["connectedTo"].x][bit["connectedTo"].y]["powered"] = true
-							
-							newBlueprint[rowIndex][bitIndex]["powered"] = false
-					
-					"antenna_1":
-						
-						if antenna[0]:
-							
-							if typeof(bit["connectedTo"]) == 28:
-								newBlueprint[bit["connectedTo"][0].x][bit["connectedTo"][0].y]["powerSockets"][bit["connectedTo"][1]] = true
-								
-							else:
-								newBlueprint[bit["connectedTo"].x][bit["connectedTo"].y]["powered"] = true
-							
-							newBlueprint[rowIndex][bitIndex]["powered"] = false
-					
-					"antenna_2":
-						
-						if antenna[1]:
-							
-							if typeof(bit["connectedTo"]) == 28:
-								newBlueprint[bit["connectedTo"][0].x][bit["connectedTo"][0].y]["powerSockets"][bit["connectedTo"][1]] = true
-								
-							else:
-								newBlueprint[bit["connectedTo"].x][bit["connectedTo"].y]["powered"] = true
-							
-							newBlueprint[rowIndex][bitIndex]["powered"] = false
+							print(newBlueprint[bit["connectedTo"]["coords"].x][bit["connectedTo"]["coords"].y]["bit"])
+							newBlueprint[bit["connectedTo"]["coords"].x][bit["connectedTo"]["coords"].y]["powered"][bit["connectedTo"]["topOrBottom"]] = true
 					
 					"funnel":
 						
-						if bit["powered"]:
-							
-							if _relitive(blueprint[rowIndex], bitIndex, -1) != null and blueprint[rowIndex][bitIndex - 1]["bit"] == "barrel" and blueprint[rowIndex][bitIndex - 1]["count"] != 0:
+						if bit["powered"]["both"]:
+							if [bitIndex - 1] != null and blueprint[rowIndex][bitIndex - 1]["bit"] == "barrel" and blueprint[rowIndex][bitIndex - 1]["count"] != 0:
 								var output
 								
 								if bit["anchor"] == "b" and _relitive(blueprint[rowIndex], bitIndex , 1) != null:
@@ -196,28 +234,22 @@ func _tick():
 									if newBlueprint[rowIndex][bitIndex - 1]["count"] == 0:
 										newBlueprint[rowIndex][bitIndex - 1]["item"] = "air"
 								
-							newBlueprint[rowIndex][bitIndex]["powered"] = false
+							newBlueprint[rowIndex][bitIndex]["powered"]["both"] = false
 							
 					
 					"tip":
 						
-						if bit["powered"]:
+						if bit["powered"]["both"]:
 							var item = bit["item"]
-							$Woosh.play()
 							
 							if tileMap.BLOCK_FRAME.has(item):
 								
 								var thrownBlock = THROWN_BLOCK.instantiate()
 								thrownBlock.block = item
-								thrownBlock.velocity = Vector2(300, 0).rotated(rotation)
-								
-								if scale.x == -1:
-									thrownBlock.velocity = thrownBlock.velocity.rotated(PI)
-									thrownBlock.velocity.y *= -1
-								
+								thrownBlock.velocity = Vector2(300, 0).rotated(get_parent().rotation)
 								thrownBlock.velocity += velocity
 								thrownBlock.position = to_global(TB_INIT + Vector2(rowIndex, bitIndex) * TB_SPACING)
-								get_parent().add_child(thrownBlock)
+								get_node("../").add_child(thrownBlock)
 								
 							else:
 								match item:
@@ -225,35 +257,34 @@ func _tick():
 									"webs":
 										var web = WEB.instantiate()
 										web.position = to_global(TB_INIT + Vector2(rowIndex, bitIndex) * TB_SPACING)
-										web.velocity = Vector2(300, 0).rotated(rotation)
+										web.velocity = Vector2(300, 0).rotated(get_parent().rotation)
 										
-										if scale.x == -1:
+										if get_node("../../").scale.x == -1:
 											web.velocity = web.velocity.rotated(PI)
 											web.velocity.y *= -1
 										
-										web.velocity += velocity
-										get_parent().add_child(web)
+										web.velocity += get_node("../../../").velocity
+										get_node("../../../../").add_child(web)
 										
 									"boom_beatle":
 										var boom_beatle = CREATURES["boom_beatle"].instantiate()
 										boom_beatle.position = to_global(TB_INIT + Vector2(rowIndex, bitIndex) * TB_SPACING)
-										boom_beatle.velocity = Vector2(300, 0).rotated(rotation)
+										boom_beatle.velocity = Vector2(300, 0).rotated(get_parent().rotation)
 										
-										if scale.x == -1:
+										if get_node("../../").scale.x == -1:
 											boom_beatle.velocity = boom_beatle.velocity.rotated(PI)
 											boom_beatle.velocity.y *= -1
 										
-										boom_beatle.velocity += velocity
-										get_parent().add_child(boom_beatle)
+										boom_beatle.velocity += get_node("../../../").velocity
+										get_node("../../../../").add_child(boom_beatle)
 									
-									_:
-										$Woosh.stop()
 							
-							newBlueprint[rowIndex][bitIndex]["powered"] = false
+							newBlueprint[rowIndex][bitIndex]["powered"]["both"] = false
 							newBlueprint[rowIndex][bitIndex]["item"] = "air"
 					
 	pressed = [false, false, false]
 	blueprint = newBlueprint
+
 
 func _relitive(list, index, shift):
 	

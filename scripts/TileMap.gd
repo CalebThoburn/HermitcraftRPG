@@ -74,12 +74,14 @@ func _process(delta):
 		if Input.is_action_just_pressed("click") or (Input.is_action_pressed("click") and Input.is_action_just_released("right_click")):
 			miningStart = Time.get_ticks_msec()
 			mining = true
-		
+			
 		if Input.is_action_just_released("click"):
 			mining = false
 		
 		if mining:
+			
 			var topLayer = 0
+			
 			for layer in range(LAYERS):
 				
 				if get_cell_tile_data(layer * -1 + LAYERS - 1, target) != null:
@@ -89,6 +91,9 @@ func _process(delta):
 			var targetAtlas = get_cell_atlas_coords(topLayer, target)
 			breakTime = Time.get_ticks_msec() - miningStart
 			breakTimeGoal = BREAK_DURATION[targetAtlas.x + targetAtlas.y * 8] * 1000
+			$BreakBlockSound.position = $PlayerCursor.position
+			$BreakBlockSound.targetAtlas = targetAtlas
+			$BreakBlockSound._play()
 			
 			if get_cell_atlas_coords(topLayer, target) == Vector2i(-1, -1):
 				miningStart = Time.get_ticks_msec()

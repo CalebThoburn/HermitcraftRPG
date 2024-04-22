@@ -24,13 +24,13 @@ var blueprint = [
 
 func _physics_process(delta):
 	
-	if Input.is_action_pressed("trigger_action1") and visible:
+	if Input.is_action_just_pressed("trigger_action1") and visible:
 		pressed[0] = true
 		
-	if Input.is_action_pressed("trigger_action2") and visible:
+	if Input.is_action_just_pressed("trigger_action2") and visible:
 		pressed[1] = true
 		
-	if Input.is_action_pressed("trigger_action3") and visible:
+	if Input.is_action_just_pressed("trigger_action3") and visible:
 		pressed[2] = true
 	
 	timeSinceTick += delta
@@ -82,7 +82,7 @@ func _update():
 					tidBit.frame = TB_TO_FRAME.find("computer")
 					
 				else:
-					tidBit.frame = TB_TO_FRAME.find(blueprint[row][index])
+					tidBit.frame = TB_TO_FRAME.find(blueprint[row][index]["bit"])
 				
 				tidBit.position = TB_INIT + Vector2(row , index) * TB_SPACING
 				add_child(tidBit)
@@ -90,7 +90,6 @@ func _update():
 	position = -handlePos
 
 func _tick():
-	
 	var newBlueprint = blueprint
 	
 	for rowIndex in range(blueprint.size()):
@@ -103,43 +102,79 @@ func _tick():
 				
 				match bit["bit"]:
 					
+					"computer_xor":
+						
+						if (bit["powered"]["top"] or bit["powered"]["bottom"]) and !(bit["powered"]["top"] and bit["powered"]["bottom"]):
+							if bit["connectedTo"]["top"] != null:
+								newBlueprint[bit["connectedTo"]["top"]["coords"].x][bit["connectedTo"]["top"]["coords"].y]["powered"][bit["connectedTo"]["top"]["topOrBottom"]] = true
+							
+							if bit["connectedTo"]["bottom"] != null:
+								newBlueprint[bit["connectedTo"]["bottom"]["coords"].x][bit["connectedTo"]["bottom"]["coords"].y]["powered"][bit["connectedTo"]["bottom"]["topOrBottom"]] = true
+						
+						newBlueprint[rowIndex][bitIndex]["powered"]["top"] = false
+						newBlueprint[rowIndex][bitIndex]["powered"]["bottom"] = false
+						
+					"computer_and":
+						
+						if bit["powered"]["top"] and bit["powered"]["bottom"]:
+							
+							if bit["connectedTo"]["top"] != null:
+								
+								newBlueprint[bit["connectedTo"]["top"]["coords"].x][bit["connectedTo"]["top"]["coords"].y]["powered"][bit["connectedTo"]["top"]["topOrBottom"]] = true
+							
+							if bit["connectedTo"]["bottom"] != null:
+								
+								newBlueprint[bit["connectedTo"]["bottom"]["coords"].x][bit["connectedTo"]["bottom"]["coords"].y]["powered"][bit["connectedTo"]["bottom"]["topOrBottom"]] = true
+						
+						newBlueprint[rowIndex][bitIndex]["powered"]["top"] = false
+						newBlueprint[rowIndex][bitIndex]["powered"]["bottom"] = false
+						
+					"computer_flip":
+						
+						if bit["powered"]["top"] or bit["powered"]["bottom"]:
+							bit["flop"] = !bit["flop"]
+						
+						if bit["flop"]:
+							if bit["connectedTo"]["top"] != null:
+								newBlueprint[bit["connectedTo"]["top"]["coords"].x][bit["connectedTo"]["top"]["coords"].y]["powered"][bit["connectedTo"]["top"]["topOrBottom"]] = true
+							
+							if bit["connectedTo"]["bottom"] != null:
+								newBlueprint[bit["connectedTo"]["bottom"]["coords"].x][bit["connectedTo"]["bottom"]["coords"].y]["powered"][bit["connectedTo"]["bottom"]["topOrBottom"]] = true
+						
+						newBlueprint[rowIndex][bitIndex]["powered"]["top"] = false
+						newBlueprint[rowIndex][bitIndex]["powered"]["bottom"] = false
+						
 					"antenna_1":
 						
-						if bit["powered"]:
+						if bit["powered"]["both"]:
 							
 							for antenna in get_node("../../../").antennaInRange:
 								
 								if antenna.info["type"] == 1:
 									antenna._power()
 							
-							bit["powered"] = false
+							newBlueprint[rowIndex][bitIndex]["powered"]["both"] = false
 							
 					"antenna_2":
 						
-						if bit["powered"]:
+						if bit["powered"]["both"]:
 							
 							for antenna in get_node("../../../").antennaInRange:
 								
 								if antenna.info["type"] == 2:
 									antenna._power()
 							
-							bit["powered"] = false
+							newBlueprint[rowIndex][bitIndex]["powered"]["both"] = false
 							
 					"trigger":
 						
 						if pressed[bit["action"] - 1]:
-							
-							if typeof(bit["connectedTo"]) == 28:
-								newBlueprint[bit["connectedTo"][0].x][bit["connectedTo"][0].y]["powerSockets"][bit["connectedTo"][1]] = true
-								
-							else:
-								newBlueprint[bit["connectedTo"].x][bit["connectedTo"].y]["powered"] = true
-							
-							newBlueprint[rowIndex][bitIndex]["powered"] = false
+						
+							newBlueprint[bit["connectedTo"]["coords"].x][bit["connectedTo"]["coords"].y]["powered"][bit["connectedTo"]["topOrBottom"]] = true
 					
 					"funnel":
 						
-						if bit["powered"]:
+						if bit["powered"]["both"]:
 							if [bitIndex - 1] != null and blueprint[rowIndex][bitIndex - 1]["bit"] == "barrel" and blueprint[rowIndex][bitIndex - 1]["count"] != 0:
 								var output
 								
@@ -160,12 +195,12 @@ func _tick():
 									if newBlueprint[rowIndex][bitIndex - 1]["count"] == 0:
 										newBlueprint[rowIndex][bitIndex - 1]["item"] = "air"
 								
-							newBlueprint[rowIndex][bitIndex]["powered"] = false
+							newBlueprint[rowIndex][bitIndex]["powered"]["both"] = false
 							
 					
 					"tip":
 						
-						if bit["powered"]:
+						if bit["powered"]["both"]:
 							var item = bit["item"]
 							get_node("../Woosh").play()
 							
@@ -213,7 +248,7 @@ func _tick():
 									_:
 										get_node("../Woosh").stop()
 							
-							newBlueprint[rowIndex][bitIndex]["powered"] = false
+							newBlueprint[rowIndex][bitIndex]["powered"]["both"] = false
 							newBlueprint[rowIndex][bitIndex]["item"] = "air"
 					
 	pressed = [false, false, false]

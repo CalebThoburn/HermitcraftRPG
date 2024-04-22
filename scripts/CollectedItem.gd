@@ -129,6 +129,10 @@ func _update_invention():
 					if _relitive(blueprint, tbRow, -1)[tbIndex] != "shaft":
 						tidBit.frame = TID_BITS.find(bit + "_l")
 				
+				elif bit.left(8) == "computer":
+					
+					tidBit.frame = TID_BITS.find("computer")
+				
 				else:
 					tidBit.frame = TID_BITS.find(bit)
 				

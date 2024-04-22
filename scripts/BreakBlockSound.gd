@@ -1,6 +1,6 @@
 extends AudioStreamPlayer2D
 
-const COOLDWON = .3
+const COOLDWON = .15
 const BLOCK_SOUNDS = {
 	"grass": [
 		preload("res://audio/blocks/grass/break/GrassBreak1.mp3"), 
@@ -36,9 +36,10 @@ func _process(delta):
 	
 func _play():
 	
-	cooldown = COOLDWON
-	
-	if BLOCK_SOUNDS.keys().has(tileMap.BLOCK_FRAME[targetAtlas.x + targetAtlas.y * 8]):
-		stream = BLOCK_SOUNDS[tileMap.BLOCK_FRAME[targetAtlas.x + targetAtlas.y * 8]].pick_random()
-		play()
+	if cooldown == 0:
+		cooldown = COOLDWON
+		
+		if BLOCK_SOUNDS.keys().has(tileMap.BLOCK_FRAME[targetAtlas.x + targetAtlas.y * 8]):
+			stream = BLOCK_SOUNDS[tileMap.BLOCK_FRAME[targetAtlas.x + targetAtlas.y * 8]].pick_random()
+			play()
 

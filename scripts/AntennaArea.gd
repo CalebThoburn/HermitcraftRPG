@@ -1,5 +1,7 @@
 extends Area2D
 
+const CREATURE = "Mechanism"
+
 var info
 
 func _on_body_entered(body):
@@ -13,4 +15,4 @@ func _on_body_exited(body):
 
 func _power():
 	var connection = get_parent().blueprint[info["position"].x][info["position"].y]["connectedTo"]
-	get_parent().blueprint[connection.x][connection.y]["powered"] = true
+	get_parent().blueprint[connection["coords"].x][connection["coords"].y]["powered"][connection["topOrBottom"]] = true
