@@ -38,6 +38,8 @@ var wire = null
 var mouseIn = false
 var selecting = false
 
+@onready var camera = get_node("../../Player/Camera")
+
 func _process(delta):
 	
 	if mouseInGrid or mouseInOutput or mouseInResources:
@@ -67,14 +69,14 @@ func _process(delta):
 						wire = WIRE.instantiate()
 						wire.position = WIRE_OFFSET[grid[mouseGridPos.x][mouseGridPos.y].info["anchor"]]
 						wire.origin = mouseGridPos * SPACING + Vector2(INITIAL_X, INITIAL_Y)
-						wire.color = 0
+						wire.color = randi_range(0, 2)
 						wire.from = {"coords": mouseGridPos, "topOrBottom": "both"}
 						add_child(wire)
 					
 					elif grid[mouseGridPos.x][mouseGridPos.y] != null and grid[mouseGridPos.x][mouseGridPos.y].info["bit"].left(7) == "antenna" and grid[mouseGridPos.x][mouseGridPos.y].info["connectedTo"] == null:
 						wire = WIRE.instantiate()
 						wire.position = WIRE_OFFSET[grid[mouseGridPos.x][mouseGridPos.y].info["bit"]]
-						wire.color = 0
+						wire.color = randi_range(0, 2)
 						wire.origin = mouseGridPos * SPACING + Vector2(INITIAL_X, INITIAL_Y)
 						wire.from = {"coords": mouseGridPos, "topOrBottom": "both"}
 						add_child(wire)
@@ -83,7 +85,7 @@ func _process(delta):
 						wire = WIRE.instantiate()
 						wire.position = WIRE_OFFSET["computer_out"]
 						wire.origin = mouseGridPos * SPACING + Vector2(INITIAL_X, INITIAL_Y)
-						wire.color = 0
+						wire.color = randi_range(0, 2)
 						
 						if topOrBottom == "bottom":
 							wire.position.y -= 3
@@ -353,7 +355,7 @@ func _process(delta):
 							wire.end = wire.to["coords"] * SPACING + WIRE_OFFSET[blueprint[wire.to["coords"].x][ wire.to["coords"].y]["bit"]] + Vector2(INITIAL_X, INITIAL_Y) - WIRE_OFFSET[resource.info["anchor"]]
 							wire.origin = wire.from * SPACING + Vector2(INITIAL_X, INITIAL_Y)
 							wire.attached = true
-							wire.color = 0
+							wire.color = randi_range(0, 2)
 							
 							if blueprint[wire.to["coords"].x][wire.to["coords"].y]["anchor"] == null:
 								wire.position += WIRE_OFFSET[blueprint[wire.to["coords"].x][wire.to["coords"].y]["bit"]]
@@ -414,12 +416,22 @@ func _type(blueprint):
 
 func _close():
 	get_node("../../Player").crafting = false
+	camera.origin = camera.position
+	camera.destination = Vector2(0, 0)
+	camera.originZoom = camera.zoom
+	camera.destinedZoom = Vector2(4, 4)
+	camera.startTime = Time.get_ticks_msec() / 1000.0
 	hide()
 	_reset_board()
 
 func _open():
 	selecting = false
 	get_node("../../Player").crafting = true
+	camera.origin = camera.position
+	camera.destination = position - get_node("../../Player").position + Vector2(0, -10)
+	camera.originZoom = camera.zoom
+	camera.destinedZoom = Vector2(8, 8)
+	camera.startTime = Time.get_ticks_msec() / 1000.0
 	show()
 	_reset_board()
 	_set_resources()

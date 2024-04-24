@@ -23,6 +23,11 @@ var pressed = [false, false, false]
 var antenna = [false, false]
 var timeSinceTick = 0
 var handlePos = Vector2(0, 0)
+var collisionBits = [
+	[null, null, null, null], 
+	[null, null, null, null], 
+	[null, null, null, null], 
+	[null, null, null, null]]
 var blueprint = [
 	[null, null, null, null], 
 	[null, null, null, null], 
@@ -75,6 +80,7 @@ func _build():
 					collisionPoints += 1
 					var collision = COLLISION.instantiate()
 					collision.position = Vector2(row, index) * TB_SPACING + TB_INIT
+					collisionBits[row][index] = collision
 					add_child(collision)
 				
 				if blueprint[row][index]["bit"] == "shaft":
@@ -134,8 +140,8 @@ func _tick():
 					
 					"wheel":
 						
-						if bit["powered"]["both"]:
-							
+						if bit["powered"]["both"] and collisionBits[rowIndex][bitIndex].get_node("BlockSensor").blocksTouching > 0:
+							print(collisionBits[rowIndex][bitIndex].get_node("BlockSensor").blocksTouching)
 							if abs(velocity.x) < MAX_SPEED:
 								velocity.x += ACCELERATION * bit["direction"] * TIME_BETWEEN_TICKS
 							

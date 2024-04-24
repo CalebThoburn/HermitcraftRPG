@@ -1,4 +1,4 @@
-[gd_scene load_steps=82 format=3 uid="uid://hwdny0eydrfo"]
+[gd_scene load_steps=83 format=3 uid="uid://hwdny0eydrfo"]
 
 [ext_resource type="Texture2D" uid="uid://ne8eq3r5h03d" path="res://textures/Tileset.png" id="1_3yxaf"]
 [ext_resource type="Script" path="res://scripts/notes.gd" id="1_ghh82"]
@@ -41,6 +41,7 @@
 [ext_resource type="Texture2D" uid="uid://c72h4crxmjqfy" path="res://textures/inventory/FinalInventory.png" id="31_2rs5t"]
 [ext_resource type="AudioStream" uid="uid://c7p4ilxfg7bci" path="res://audio/Woosh.mp3" id="32_4doot"]
 [ext_resource type="Script" path="res://scripts/Head.gd" id="38_awla5"]
+[ext_resource type="Script" path="res://scripts/Camera.gd" id="39_ssk7j"]
 [ext_resource type="AudioStream" uid="uid://dr31egjcqkllj" path="res://audio/Damage.mp3" id="40_mrgmr"]
 [ext_resource type="Script" path="res://scripts/DudeGuy.gd" id="42_jafkv"]
 [ext_resource type="Script" path="res://scripts/WalkSounds.gd" id="43_jwtlw"]
@@ -940,9 +941,9 @@ libraries = {
 }
 
 [node name="Camera" type="Camera2D" parent="Player"]
-position = Vector2(0, -32)
 ignore_rotation = false
 zoom = Vector2(4, 4)
+script = ExtResource("39_ssk7j")
 
 [node name="HotBar" type="Sprite2D" parent="Player"]
 z_index = 1
@@ -989,7 +990,6 @@ script = ExtResource("43_jwtlw")
 [node name="DudeGuy" type="CharacterBody2D" parent="."]
 position = Vector2(-342, -20)
 collision_layer = 8
-collision_mask = 9
 script = ExtResource("42_jafkv")
 
 [node name="Sprite2D" type="Sprite2D" parent="DudeGuy"]

@@ -1,12 +1,16 @@
-[gd_scene load_steps=4 format=3 uid="uid://dvdkj1cvyywlw"]
+[gd_scene load_steps=6 format=3 uid="uid://dvdkj1cvyywlw"]
 
 [ext_resource type="Script" path="res://scripts/CursorSensor.gd" id="1_uyi5u"]
+[ext_resource type="Script" path="res://scripts/BlockSensor.gd" id="2_uw7y2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_x8yjn"]
 size = Vector2(3, 3)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2gdj3"]
 size = Vector2(3, 3)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cy2lk"]
+size = Vector2(3.5, 3.5)
 
 [node name="MechanismCollision" type="CollisionShape2D"]
 shape = SubResource("RectangleShape2D_x8yjn")
@@ -19,5 +23,13 @@ script = ExtResource("1_uyi5u")
 [node name="CursorSensorCollision" type="CollisionShape2D" parent="CursorSensor"]
 shape = SubResource("RectangleShape2D_2gdj3")
 
+[node name="BlockSensor" type="Area2D" parent="."]
+script = ExtResource("2_uw7y2")
+
+[node name="BlockSensorCollision" type="CollisionShape2D" parent="BlockSensor"]
+shape = SubResource("RectangleShape2D_cy2lk")
+
 [connection signal="area_entered" from="CursorSensor" to="CursorSensor" method="_on_area_entered"]
 [connection signal="area_exited" from="CursorSensor" to="CursorSensor" method="_on_area_exited"]
+[connection signal="body_entered" from="BlockSensor" to="BlockSensor" method="_on_body_entered"]
+[connection signal="body_exited" from="BlockSensor" to="BlockSensor" method="_on_body_exited"]
