@@ -1,0 +1,62 @@
+[gd_scene load_steps=8 format=3 uid="uid://bwx85hwuxmf2"]
+
+[ext_resource type="Texture2D" uid="uid://bjbbf47wo7i6t" path="res://consistentComponents/menus/BlankEntry.png" id="1_3wg6r"]
+[ext_resource type="Script" uid="uid://b85km6fyat6e3" path="res://consistentComponents/menus/tile_menu.gd" id="2_lcye7"]
+[ext_resource type="Texture2D" uid="uid://bvld77p1dc1jk" path="res://mods/default/blocks/blockset.png" id="3_lcye7"]
+[ext_resource type="Texture2D" uid="uid://bf8tbrpobxbyk" path="res://consistentComponents/menus/EditIcon.png" id="4_sfku2"]
+[ext_resource type="FontFile" uid="uid://bdwkhn5pifive" path="res://consistentComponents/menus/pixelFont.ttf" id="5_fwhw6"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lcye7"]
+size = Vector2(35.333004, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fwhw6"]
+size = Vector2(11.994004, 11.994004)
+
+[node name="TileMenu" type="Sprite2D"]
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("1_3wg6r")
+offset = Vector2(23, 5)
+script = ExtResource("2_lcye7")
+
+[node name="Tile" type="Sprite2D" parent="."]
+position = Vector2(4.999996, 4.9999995)
+scale = Vector2(0.6666667, 0.6666667)
+texture = ExtResource("3_lcye7")
+hframes = 8
+vframes = 3
+frame = 10
+
+[node name="DevTileSelect" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DevTileSelect"]
+position = Vector2(27.666836, 5)
+shape = SubResource("RectangleShape2D_lcye7")
+
+[node name="EditIcon" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(3.6666665, 3.6666665)
+scale = Vector2(0.667, 0.667)
+texture = ExtResource("4_sfku2")
+
+[node name="TileEdit" type="Area2D" parent="."]
+position = Vector2(3.6666667, 3.6666667)
+scale = Vector2(0.667, 0.667)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TileEdit"]
+position = Vector2(2, 2)
+shape = SubResource("RectangleShape2D_fwhw6")
+
+[node name="Label" type="Label" parent="."]
+offset_left = 10.666666
+offset_top = 4.666667
+offset_right = 1521.7778
+offset_bottom = 107.666664
+scale = Vector2(0.03, 0.03)
+theme_override_colors/font_color = Color(0.2509804, 0.2509804, 0.2509804, 1)
+theme_override_fonts/font = ExtResource("5_fwhw6")
+theme_override_font_sizes/font_size = 128
+
+[connection signal="input_event" from="DevTileSelect" to="." method="_on_dev_tile_input_event"]
+[connection signal="input_event" from="TileEdit" to="." method="_on_tile_edit_input_event"]
+[connection signal="mouse_entered" from="TileEdit" to="." method="_on_tile_edit_mouse_entered"]
+[connection signal="mouse_exited" from="TileEdit" to="." method="_on_tile_edit_mouse_exited"]

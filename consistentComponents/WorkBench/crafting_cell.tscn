@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://cllx26p0anp07"]
+
+[ext_resource type="Script" uid="uid://bx6slsmwiwnmd" path="res://consistentComponents/WorkBench/crafting_cell.gd" id="1_gm7ff"]
+[ext_resource type="Texture2D" uid="uid://bnmfvic2gkv6a" path="res://mods/default/machinesAndTBs/TinkerResources.png" id="2_mrtgv"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mrtgv"]
+size = Vector2(7.9999995, 8.000003)
+
+[node name="CraftingCell" type="Area2D" unique_id=540405341]
+script = ExtResource("1_gm7ff")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=91228999]
+texture = ExtResource("2_mrtgv")
+hframes = 6
+vframes = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=211049769]
+position = Vector2(1.7881393e-07, 0)
+shape = SubResource("RectangleShape2D_mrtgv")
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

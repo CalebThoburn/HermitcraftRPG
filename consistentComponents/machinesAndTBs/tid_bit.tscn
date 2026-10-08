@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://b75rehwrl2wtd"]
+
+[ext_resource type="Texture2D" uid="uid://c6swkt1a61ato" path="res://mods/default/machinesAndTBs/TinkerBits.png" id="1_hdege"]
+[ext_resource type="Script" uid="uid://ca7765yhk4gp1" path="res://consistentComponents/machinesAndTBs/tid_bit.gd" id="2_otrej"]
+
+[node name="TidBit" type="Sprite2D" unique_id=244449375]
+texture = ExtResource("1_hdege")
+hframes = 6
+vframes = 3
+script = ExtResource("2_otrej")

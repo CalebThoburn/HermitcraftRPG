@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://cablgqb31l0dv"]
+
+[ext_resource type="Texture2D" uid="uid://bnmfvic2gkv6a" path="res://mods/default/machinesAndTBs/TinkerResources.png" id="1_efab1"]
+[ext_resource type="Script" uid="uid://74u1rwhq5f8x" path="res://consistentComponents/machinesAndTBs/tid_bit_resource.gd" id="2_pcrgv"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j0a0l"]
+size = Vector2(8, 8)
+
+[node name="TidBitResource" type="Sprite2D" unique_id=243131152]
+texture = ExtResource("1_efab1")
+hframes = 6
+vframes = 3
+script = ExtResource("2_pcrgv")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=410317487]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1527811366]
+shape = SubResource("RectangleShape2D_j0a0l")
+
+[connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
+[connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]

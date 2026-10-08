@@ -1,0 +1,386 @@
+[gd_scene format=3 uid="uid://2qf7i7jvpaq7"]
+
+[ext_resource type="Texture2D" uid="uid://bvld77p1dc1jk" path="res://mods/default/blocks/blockset.png" id="1_8cv8e"]
+[ext_resource type="Script" uid="uid://giaqisnkl6oa" path="res://world_layer.gd" id="2_ataeu"]
+[ext_resource type="Script" uid="uid://bwnndgj4yi0b0" path="res://player.gd" id="3_yoko8"]
+[ext_resource type="Script" uid="uid://cgbsryaorfw5u" path="res://consistentComponents/player/player_sight.gd" id="4_cqkbu"]
+[ext_resource type="Texture2D" uid="uid://dkmqtpx2m0wx1" path="res://icon.svg" id="4_m2q1n"]
+[ext_resource type="Script" uid="uid://dbdws0ujnp7f5" path="res://consistentComponents/player/playerCamera.gd" id="5_orm0h"]
+[ext_resource type="Script" uid="uid://cjx6byatcyx7s" path="res://consistentComponents/menus/tile_menus.gd" id="5_wk63a"]
+[ext_resource type="Script" uid="uid://dhppke6qf0tel" path="res://consistentComponents/player/dev_tile_place.gd" id="6_ataeu"]
+[ext_resource type="Script" uid="uid://bgpu0d0b3anqa" path="res://consistentComponents/player/dev_components.gd" id="6_wk63a"]
+[ext_resource type="Script" uid="uid://bl05bchyskp5p" path="res://consistentComponents/menus/edit_menu.gd" id="7_m2q1n"]
+[ext_resource type="FontFile" uid="uid://bdwkhn5pifive" path="res://consistentComponents/menus/pixelFont.ttf" id="7_yoko8"]
+[ext_resource type="Script" uid="uid://hi148ob4ir5f" path="res://consistentComponents/retexture_mode_button.gd" id="9_0ny71"]
+[ext_resource type="Script" uid="uid://i6yloldohoca" path="res://consistentComponents/menus/texture_edit.gd" id="10_o1616"]
+[ext_resource type="Script" uid="uid://cry7w3sblpgq4" path="res://consistentComponents/menus/collision_mode_Button.gd" id="11_3xa83"]
+[ext_resource type="Texture2D" uid="uid://ctitkyylc8561" path="res://consistentComponents/menus/saveButton.png" id="11_4ranb"]
+[ext_resource type="Script" uid="uid://c81mvxjb7ylp3" path="res://consistentComponents/menus/save_button.gd" id="11_s8bne"]
+[ext_resource type="Texture2D" uid="uid://cr7onogarcxa" path="res://consistentComponents/menus/collision.png" id="13_t6xe6"]
+[ext_resource type="Texture2D" uid="uid://kpsgfi22qx0y" path="res://consistentComponents/menus/retexture.png" id="14_0ny71"]
+[ext_resource type="Texture2D" uid="uid://depx57pbf0y6l" path="res://consistentComponents/menus/collisionOff.png" id="15_47p3u"]
+[ext_resource type="Script" uid="uid://cuhwi6xx44srl" path="res://consistentComponents/code_mode.gd" id="16_1pgbf"]
+[ext_resource type="Texture2D" uid="uid://gdbq1e73e4v0" path="res://consistentComponents/menus/close.png" id="17_7h6w6"]
+[ext_resource type="Texture2D" uid="uid://xrqruiyef6t1" path="res://consistentComponents/menus/code.png" id="17_nlif2"]
+[ext_resource type="Texture2D" uid="uid://cwjklpmh2t40i" path="res://mods/default/machinesAndTBs/craftingBench.png" id="20_0qecl"]
+[ext_resource type="Script" uid="uid://m6jn7sc3i4v6" path="res://consistentComponents/collision_point.gd" id="20_n8wa0"]
+[ext_resource type="Script" uid="uid://04yha3ecnlxs" path="res://consistentComponents/WorkBench/work_bench.gd" id="21_kf1oa"]
+[ext_resource type="Texture2D" uid="uid://bnmfvic2gkv6a" path="res://mods/default/machinesAndTBs/TinkerResources.png" id="22_n8wa0"]
+[ext_resource type="Script" uid="uid://c2qtxr6p2mdwc" path="res://consistentComponents/WorkBench/mouse_resource.gd" id="22_nxodl"]
+[ext_resource type="Script" uid="uid://0onp1orud2gc" path="res://consistentComponents/workBenchOutput.gd" id="24_n8wa0"]
+[ext_resource type="Script" uid="uid://bcnjfpoo4ofje" path="res://consistentComponents/blockCodeEdit.gd" id="24_nlif2"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0hol4"]
+texture = ExtResource("1_8cv8e")
+texture_region_size = Vector2i(12, 12)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+7:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+4:2/0 = 0
+5:2/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_wtcfe"]
+tile_size = Vector2i(12, 12)
+physics_layer_0/collision_layer = 1
+sources/1 = SubResource("TileSetAtlasSource_0hol4")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0hol4"]
+size = Vector2(19, 46)
+
+[sub_resource type="Theme" id="Theme_ataeu"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_t6xe6"]
+size = Vector2(6, 6.000023)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_dkrbk"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("13_t6xe6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_47p3u")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_p8oad"]
+size = Vector2(6, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4ranb"]
+size = Vector2(6, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7h6w6"]
+size = Vector2(5, 5)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_47p3u"]
+radius = 1.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dkrbk"]
+size = Vector2(7.999999, 8)
+
+[node name="Game" type="Node2D" unique_id=898926721]
+
+[node name="WorldLayer" type="TileMapLayer" parent="." unique_id=1698579546]
+tile_set = SubResource("TileSet_wtcfe")
+script = ExtResource("2_ataeu")
+
+[node name="DevTilePlace" type="Sprite2D" parent="WorldLayer" unique_id=1879880666]
+modulate = Color(0.61960787, 0.61960787, 0.61960787, 0.6)
+position = Vector2(31, -59)
+script = ExtResource("6_ataeu")
+
+[node name="PlayerSight" type="Sprite2D" parent="WorldLayer" unique_id=83110222]
+hframes = 5
+vframes = 2
+script = ExtResource("4_cqkbu")
+
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1932518094]
+z_index = -1
+position = Vector2(31, -59)
+script = ExtResource("3_yoko8")
+
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=555474051]
+zoom = Vector2(3, 3)
+script = ExtResource("5_orm0h")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player" unique_id=1827144448]
+scale = Vector2(0.144531, 0.355469)
+texture = ExtResource("4_m2q1n")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=2054132186]
+shape = SubResource("RectangleShape2D_0hol4")
+
+[node name="DevComponents" type="Node2D" parent="Player" unique_id=403581281]
+z_index = 1
+script = ExtResource("6_wk63a")
+
+[node name="TileMenus" type="ScrollContainer" parent="Player/DevComponents" unique_id=986061629]
+visible = false
+offset_left = -183.0
+offset_top = -101.0
+offset_right = -114.0
+offset_bottom = 10.0
+theme = SubResource("Theme_ataeu")
+script = ExtResource("5_wk63a")
+
+[node name="Container" type="Control" parent="Player/DevComponents/TileMenus" unique_id=1061767326]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+
+[node name="EditMenu" type="ColorRect" parent="Player/DevComponents" unique_id=1645608976 node_paths=PackedStringArray("colCornA", "colCornB", "colCornC", "colCornD")]
+visible = false
+offset_left = -108.0
+offset_top = -101.0
+offset_right = -14.0
+offset_bottom = 10.0
+mouse_filter = 1
+color = Color(0.2509804, 0.2509804, 0.2509804, 1)
+script = ExtResource("7_m2q1n")
+colCornA = NodePath("CollisionPointA")
+colCornB = NodePath("CollisionPointB")
+colCornC = NodePath("CollisionPointC")
+colCornD = NodePath("CollisionPointD")
+
+[node name="EditMenuInner" type="ColorRect" parent="Player/DevComponents/EditMenu" unique_id=145613401]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 93.0
+offset_bottom = 110.0
+mouse_filter = 1
+color = Color(0.3882353, 0.3882353, 0.3882353, 1)
+
+[node name="RetextureMode" type="Area2D" parent="Player/DevComponents/EditMenu" unique_id=408928976]
+position = Vector2(54, 18)
+scale = Vector2(1, 0.9999995)
+script = ExtResource("9_0ny71")
+
+[node name="Retexture" type="Sprite2D" parent="Player/DevComponents/EditMenu/RetextureMode" unique_id=1431855885]
+texture = ExtResource("14_0ny71")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/DevComponents/EditMenu/RetextureMode" unique_id=1153366175]
+position = Vector2(0, 2.1827873e-11)
+shape = SubResource("RectangleShape2D_t6xe6")
+
+[node name="CollisionMode" type="Area2D" parent="Player/DevComponents/EditMenu" unique_id=1217663659]
+position = Vector2(62, 18)
+scale = Vector2(1, 0.9999995)
+script = ExtResource("11_3xa83")
+
+[node name="Collision" type="AnimatedSprite2D" parent="Player/DevComponents/EditMenu/CollisionMode" unique_id=1636711639]
+scale = Vector2(1, 1.0000005)
+sprite_frames = SubResource("SpriteFrames_dkrbk")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/DevComponents/EditMenu/CollisionMode" unique_id=714557837]
+position = Vector2(0, 2.1827873e-11)
+shape = SubResource("RectangleShape2D_t6xe6")
+
+[node name="CodeMode" type="Area2D" parent="Player/DevComponents/EditMenu" unique_id=1885679972]
+position = Vector2(70, 18)
+script = ExtResource("16_1pgbf")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player/DevComponents/EditMenu/CodeMode" unique_id=1942536861]
+texture = ExtResource("17_nlif2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/DevComponents/EditMenu/CodeMode" unique_id=785602310]
+shape = SubResource("RectangleShape2D_p8oad")
+
+[node name="TextEdit" type="TextEdit" parent="Player/DevComponents/EditMenu" unique_id=795445773]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 3.0
+offset_right = 2710.0
+offset_bottom = 136.33301
+scale = Vector2(0.03, 0.03)
+mouse_filter = 1
+theme_override_fonts/font = ExtResource("7_yoko8")
+theme_override_font_sizes/font_size = 128
+
+[node name="TextureEdit" type="ColorRect" parent="Player/DevComponents/EditMenu" unique_id=1345569797]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 15.0
+offset_right = 46.0
+offset_bottom = 55.0
+mouse_filter = 1
+color = Color(0.2509804, 0.2509804, 0.2509804, 1)
+script = ExtResource("10_o1616")
+
+[node name="ColorPicker" type="ColorPicker" parent="Player/DevComponents/EditMenu" unique_id=903001047]
+layout_mode = 0
+offset_left = 51.0
+offset_top = 22.0
+offset_right = 351.0
+offset_bottom = 656.0
+scale = Vector2(0.125, 0.125)
+mouse_filter = 0
+
+[node name="SaveButton" type="Area2D" parent="Player/DevComponents/EditMenu" unique_id=1716144792]
+position = Vector2(0, 6)
+script = ExtResource("11_s8bne")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player/DevComponents/EditMenu/SaveButton" unique_id=1186194390]
+position = Vector2(5, 5)
+texture = ExtResource("11_4ranb")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/DevComponents/EditMenu/SaveButton" unique_id=343811722]
+position = Vector2(5, 5)
+shape = SubResource("RectangleShape2D_4ranb")
+
+[node name="CloseButton" type="Area2D" parent="Player/DevComponents/EditMenu" unique_id=1251644985]
+
+[node name="Close" type="Sprite2D" parent="Player/DevComponents/EditMenu/CloseButton" unique_id=135897390]
+position = Vector2(4, 4)
+texture = ExtResource("17_7h6w6")
+offset = Vector2(0.5, 0.5)
+
+[node name="Area2D" type="CollisionShape2D" parent="Player/DevComponents/EditMenu/CloseButton" unique_id=249341368]
+position = Vector2(4.5, 4.5)
+shape = SubResource("RectangleShape2D_7h6w6")
+
+[node name="DurabilityLabel" type="Label" parent="Player/DevComponents/EditMenu" unique_id=554829649]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 61.0
+offset_right = 4936.0
+offset_bottom = 1423.0
+scale = Vector2(0.004, 0.004)
+theme_override_font_sizes/font_size = 1000
+text = "durability:"
+
+[node name="Durability" type="TextEdit" parent="Player/DevComponents/EditMenu" unique_id=873217877]
+layout_mode = 0
+offset_left = 23.0
+offset_top = 61.999996
+offset_right = 756.33325
+offset_bottom = 195.33301
+scale = Vector2(0.03, 0.03)
+mouse_filter = 1
+theme_override_fonts/font = ExtResource("7_yoko8")
+theme_override_font_sizes/font_size = 128
+
+[node name="CollisionPointA" type="Area2D" parent="Player/DevComponents/EditMenu" unique_id=767340587]
+visible = false
+position = Vector2(7, 16)
+script = ExtResource("20_n8wa0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/DevComponents/EditMenu/CollisionPointA" unique_id=805015925]
+shape = SubResource("CircleShape2D_47p3u")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player/DevComponents/EditMenu/CollisionPointA" unique_id=1515593385]
+position = Vector2(-9.536743e-07, -5.7816505e-06)
+scale = Vector2(0.015624985, 0.015625177)
+texture = ExtResource("4_m2q1n")
+
+[node name="CollisionPointB" type="Area2D" parent="Player/DevComponents/EditMenu" unique_id=282134757]
+visible = false
+position = Vector2(45, 16)
+script = ExtResource("20_n8wa0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/DevComponents/EditMenu/CollisionPointB" unique_id=481384413]
+shape = SubResource("CircleShape2D_47p3u")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player/DevComponents/EditMenu/CollisionPointB" unique_id=1961426019]
+position = Vector2(-9.536743e-07, -5.7816505e-06)
+scale = Vector2(0.015624985, 0.015625177)
+texture = ExtResource("4_m2q1n")
+
+[node name="CollisionPointC" type="Area2D" parent="Player/DevComponents/EditMenu" unique_id=1887869636]
+visible = false
+position = Vector2(45, 54)
+script = ExtResource("20_n8wa0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/DevComponents/EditMenu/CollisionPointC" unique_id=877759853]
+shape = SubResource("CircleShape2D_47p3u")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player/DevComponents/EditMenu/CollisionPointC" unique_id=796743407]
+position = Vector2(-9.536743e-07, -5.7816505e-06)
+scale = Vector2(0.015624985, 0.015625177)
+texture = ExtResource("4_m2q1n")
+
+[node name="CollisionPointD" type="Area2D" parent="Player/DevComponents/EditMenu" unique_id=400054008]
+visible = false
+position = Vector2(7, 54)
+script = ExtResource("20_n8wa0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/DevComponents/EditMenu/CollisionPointD" unique_id=720564480]
+shape = SubResource("CircleShape2D_47p3u")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player/DevComponents/EditMenu/CollisionPointD" unique_id=118549550]
+position = Vector2(-9.536743e-07, -5.7816505e-06)
+scale = Vector2(0.015624985, 0.015625177)
+texture = ExtResource("4_m2q1n")
+
+[node name="CodeEdit" type="CodeEdit" parent="Player/DevComponents/EditMenu" unique_id=1885797416]
+visible = false
+layout_mode = 0
+offset_left = 97.0
+offset_top = 1.0
+offset_right = 291.0
+offset_bottom = 152.0
+theme_override_font_sizes/font_size = 4
+line_folding = true
+gutters_draw_executing_lines = true
+gutters_draw_line_numbers = true
+script = ExtResource("24_nlif2")
+
+[node name="WorkBench" type="Sprite2D" parent="Player" unique_id=1781318781]
+visible = false
+z_index = 2
+position = Vector2(-121, -40.5)
+scale = Vector2(3, 3)
+texture = ExtResource("20_0qecl")
+offset = Vector2(40.333, 13.5)
+script = ExtResource("21_kf1oa")
+
+[node name="Mouse" type="Sprite2D" parent="Player/WorkBench" unique_id=1290239647]
+z_index = 1
+texture = ExtResource("22_n8wa0")
+hframes = 6
+vframes = 3
+script = ExtResource("22_nxodl")
+
+[node name="Output" type="Area2D" parent="Player/WorkBench" unique_id=2096474357]
+position = Vector2(81.825, 27)
+script = ExtResource("24_n8wa0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/WorkBench/Output" unique_id=1978314509]
+shape = SubResource("RectangleShape2D_dkrbk")
+
+[connection signal="mouse_entered" from="Player/DevComponents/TileMenus" to="Player/DevComponents/TileMenus" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Player/DevComponents/TileMenus" to="Player/DevComponents/TileMenus" method="_on_mouse_exited"]
+[connection signal="input_event" from="Player/DevComponents/EditMenu/RetextureMode" to="Player/DevComponents/EditMenu/RetextureMode" method="_on_input_event"]
+[connection signal="input_event" from="Player/DevComponents/EditMenu/CollisionMode" to="Player/DevComponents/EditMenu/CollisionMode" method="_on_input_event"]
+[connection signal="input_event" from="Player/DevComponents/EditMenu/CodeMode" to="Player/DevComponents/EditMenu/CodeMode" method="_on_input_event"]
+[connection signal="input_event" from="Player/DevComponents/EditMenu/SaveButton" to="Player/DevComponents/EditMenu/SaveButton" method="_on_input_event"]
+[connection signal="input_event" from="Player/DevComponents/EditMenu/CloseButton" to="Player/DevComponents/EditMenu" method="_on_close_button_input_event"]
+[connection signal="mouse_entered" from="Player/DevComponents/EditMenu/CollisionPointA" to="Player/DevComponents/EditMenu/CollisionPointA" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Player/DevComponents/EditMenu/CollisionPointA" to="Player/DevComponents/EditMenu/CollisionPointA" method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="Player/DevComponents/EditMenu/CollisionPointB" to="Player/DevComponents/EditMenu/CollisionPointB" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Player/DevComponents/EditMenu/CollisionPointB" to="Player/DevComponents/EditMenu/CollisionPointB" method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="Player/DevComponents/EditMenu/CollisionPointC" to="Player/DevComponents/EditMenu/CollisionPointC" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Player/DevComponents/EditMenu/CollisionPointC" to="Player/DevComponents/EditMenu/CollisionPointC" method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="Player/DevComponents/EditMenu/CollisionPointD" to="Player/DevComponents/EditMenu/CollisionPointD" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Player/DevComponents/EditMenu/CollisionPointD" to="Player/DevComponents/EditMenu/CollisionPointD" method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="Player/WorkBench/Output" to="Player/WorkBench/Output" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Player/WorkBench/Output" to="Player/WorkBench/Output" method="_on_mouse_exited"]

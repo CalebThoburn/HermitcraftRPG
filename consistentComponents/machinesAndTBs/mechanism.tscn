@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cem25vso4kdin"]
+
+[ext_resource type="Script" uid="uid://xosp8x5sewkh" path="res://consistentComponents/machinesAndTBs/mechanism.gd" id="1_hp8p3"]
+
+[node name="Mechanism" type="CharacterBody2D" unique_id=1473845695]
+script = ExtResource("1_hp8p3")
